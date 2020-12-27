@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
@@ -17,6 +18,8 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.unifiedpush.connector.*
 
+const val UPDATE = "org.unifiedpush.example.android.action.UPDATE"
+var unregistering = false
 
 class CheckActivity : Activity() {
 
@@ -31,8 +34,7 @@ class CheckActivity : Activity() {
 
 
         val intentFilter = IntentFilter().apply {
-            addAction(NEW_ENDPOINT)
-            addAction(UNREGISTERED)
+            addAction(UPDATE)
         }
         registerReceiver(checkReceiver, intentFilter)
         chooseDistributor(this)
@@ -43,36 +45,24 @@ class CheckActivity : Activity() {
         super.onDestroy()
     }
 
-    private val checkReceiver: BroadcastReceiver = object: MessagingReceiver(object : MessagingReceiverHandler {
-        override fun onNewEndpoint(context: Context?, endpoint: String) {
-            this@CheckActivity.endpoint = endpoint
-            findViewById<TextView>(R.id.text_result_register).apply {
-                text = "true"
+    private val checkReceiver: BroadcastReceiver = object: BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when(intent!!.action){
+                UPDATE -> {
+                    endpoint = intent.getStringExtra("endpoint")?: ""
+                    val registered = intent.getStringExtra("registered")?: "false"
+                    findViewById<TextView>(R.id.text_result_register).apply {
+                        text = registered
+                    }
+                    findViewById<TextView>(R.id.text_gateway_value).apply {
+                        text = endpoint
+                    }
+                    val btn: Button = findViewById<View>(R.id.button_notify) as Button
+                    btn.isEnabled = (registered == "true")
+                }
             }
-            findViewById<TextView>(R.id.text_gateway_value).apply {
-                text = endpoint
-            }
-            val btn: Button = findViewById<View>(R.id.button_notify) as Button
-            btn.isEnabled = true
         }
-
-        override fun onUnregistered(context: Context?) {
-            findViewById<TextView>(R.id.text_result_register).apply {
-                text = "false"
-            }
-            findViewById<TextView>(R.id.text_gateway_value).apply {
-                text = ""
-            }
-            val btn: Button = findViewById<View>(R.id.button_notify) as Button
-            btn.isEnabled = false
-        }
-
-        override fun onUnregisteredAck(context: Context?) {
-            onUnregistered(context)
-        }
-
-        override fun onMessage(context: Context?, message: String) {}
-    }){}
+    }
 
     fun unregister(view: View) {
         Toast.makeText(this, "Unregistering", Toast.LENGTH_SHORT).show()

@@ -1,8 +1,8 @@
 package org.unifiedpush.example
 
 import android.content.Context
-import org.unifiedpush.connector.MessagingReceiver
-import org.unifiedpush.connector.MessagingReceiverHandler
+import android.content.Intent
+import org.unifiedpush.connector.*
 import java.lang.Exception
 import java.net.URLDecoder
 
@@ -16,9 +16,28 @@ val handler = object: MessagingReceiverHandler{
         Notifier(context!!).sendNotification(title,text,priority)
     }
 
-    override fun onNewEndpoint(context: Context?, endpoint: String) {}
-    override fun onUnregistered(context: Context?){}
-    override fun onUnregisteredAck(context: Context?){}
+    override fun onNewEndpoint(context: Context?, endpoint: String) {
+        val broadcastIntent = Intent()
+        broadcastIntent.`package` = context!!.packageName
+        broadcastIntent.action = UPDATE
+        broadcastIntent.putExtra("endpoint", endpoint)
+        broadcastIntent.putExtra("registered", "true")
+        context.sendBroadcast(broadcastIntent)
+    }
+    override fun onUnregistered(context: Context?){
+        val broadcastIntent = Intent()
+        broadcastIntent.`package` = context!!.packageName
+        broadcastIntent.action = UPDATE
+        broadcastIntent.putExtra("endpoint", "")
+        broadcastIntent.putExtra("registered", "false")
+        context.sendBroadcast(broadcastIntent)
+    }
+    override fun onUnregisteredAck(context: Context?){
+        if(unregistering){
+            unregistering = false
+            onUnregistered(context)
+        }
+    }
 }
 
 class CustomReceiver: MessagingReceiver(handler)

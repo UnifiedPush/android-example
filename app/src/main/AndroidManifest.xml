@@ -23,6 +23,8 @@
         <receiver android:enabled="true"  android:name=".CustomReceiver">
             <intent-filter>
                 <action android:name="org.unifiedpush.android.connector.MESSAGE"/>
+                <action android:name="org.unifiedpush.android.connector.UNREGISTERED"/>
+                <action android:name="org.unifiedpush.android.connector.NEW_ENDPOINT"/>
             </intent-filter>
         </receiver>
     </application>
