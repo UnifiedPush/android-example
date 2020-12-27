@@ -1,0 +1,3 @@
+[submodule "connector"]
+	path = connector
+	url = https://github.com/UnifiedPush/UP-lib
