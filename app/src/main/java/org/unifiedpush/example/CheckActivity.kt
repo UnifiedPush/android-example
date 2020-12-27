@@ -1,13 +1,11 @@
 package org.unifiedpush.example
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -37,7 +35,7 @@ class CheckActivity : Activity() {
             addAction(UPDATE)
         }
         registerReceiver(checkReceiver, intentFilter)
-        chooseDistributor(this)
+        registerAppWithDialog(this)
     }
 
     override fun onDestroy() {
@@ -86,21 +84,5 @@ class CheckActivity : Activity() {
                 }
             }
         requestQueue.add(stringRequest)
-    }
-
-    private fun chooseDistributor(context: Context){
-        val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-        builder.setTitle("Choose a distributor") // add a list
-
-        val distributors = getDistributors(context).toTypedArray()
-        builder.setItems(distributors) { _, which ->
-            val distributor = distributors[which]
-            saveDistributor(this, distributor)
-            Log.d("CheckActivity","distributor: $distributor")
-            registerApp(this)
-        } // create and show the alert dialog
-
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
     }
 }
