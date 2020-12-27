@@ -21,7 +21,6 @@ import org.unifiedpush.connector.*
 class CheckActivity : Activity() {
 
     private var endpoint = ""
-    private var distributor = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,7 +76,7 @@ class CheckActivity : Activity() {
 
     fun unregister(view: View) {
         Toast.makeText(this, "Unregistering", Toast.LENGTH_SHORT).show()
-        unregisterApp(this, distributor)
+        unregisterApp(this)
     }
 
     fun sendNotification(view: View) {
@@ -105,9 +104,10 @@ class CheckActivity : Activity() {
 
         val distributors = getDistributors(context).toTypedArray()
         builder.setItems(distributors) { _, which ->
-            distributor = distributors[which]
+            val distributor = distributors[which]
+            saveDistributor(this, distributor)
             Log.d("CheckActivity","distributor: $distributor")
-            registerApp(this, distributor)
+            registerApp(this)
         } // create and show the alert dialog
 
         val dialog: AlertDialog = builder.create()
