@@ -17,7 +17,6 @@ import com.android.volley.toolbox.Volley
 import org.unifiedpush.connector.*
 
 const val UPDATE = "org.unifiedpush.example.android.action.UPDATE"
-var unregistering = false
 
 class CheckActivity : Activity() {
 

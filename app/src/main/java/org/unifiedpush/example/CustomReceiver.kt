@@ -24,6 +24,7 @@ val handler = object: MessagingReceiverHandler{
         broadcastIntent.putExtra("registered", "true")
         context.sendBroadcast(broadcastIntent)
     }
+
     override fun onUnregistered(context: Context?){
         val broadcastIntent = Intent()
         broadcastIntent.`package` = context!!.packageName
@@ -31,12 +32,6 @@ val handler = object: MessagingReceiverHandler{
         broadcastIntent.putExtra("endpoint", "")
         broadcastIntent.putExtra("registered", "false")
         context.sendBroadcast(broadcastIntent)
-    }
-    override fun onUnregisteredAck(context: Context?){
-        if(unregistering){
-            unregistering = false
-            onUnregistered(context)
-        }
     }
 }
 
