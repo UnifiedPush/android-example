@@ -38,6 +38,7 @@ class CheckActivity : Activity() {
     }
 
     override fun onDestroy() {
+        unregisterApp(this)
         unregisterReceiver(checkReceiver)
         super.onDestroy()
     }
