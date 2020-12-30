@@ -14,7 +14,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import org.unifiedpush.connector.*
+import org.unifiedpush.android.connector.*
 
 const val UPDATE = "org.unifiedpush.example.android.action.UPDATE"
 

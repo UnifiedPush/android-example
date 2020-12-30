@@ -2,8 +2,8 @@ package org.unifiedpush.example
 
 import android.content.Context
 import android.content.Intent
-import org.unifiedpush.connector.MessagingReceiver
-import org.unifiedpush.connector.MessagingReceiverHandler
+import org.unifiedpush.android.connector.MessagingReceiver
+import org.unifiedpush.android.connector.MessagingReceiverHandler
 import java.net.URLDecoder
 
 val handler = object: MessagingReceiverHandler{
