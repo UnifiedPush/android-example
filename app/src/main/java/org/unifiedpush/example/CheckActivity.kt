@@ -21,6 +21,7 @@ const val UPDATE = "org.unifiedpush.example.android.action.UPDATE"
 class CheckActivity : Activity() {
 
     private var endpoint = ""
+    private val up = Registration()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +35,11 @@ class CheckActivity : Activity() {
             addAction(UPDATE)
         }
         registerReceiver(checkReceiver, intentFilter)
-        registerAppWithDialog(this)
+        up.registerAppWithDialog(this)
     }
 
     override fun onDestroy() {
-        unregisterApp(this)
+        up.unregisterApp(this)
         unregisterReceiver(checkReceiver)
         super.onDestroy()
     }
@@ -64,7 +65,7 @@ class CheckActivity : Activity() {
 
     fun unregister(view: View) {
         Toast.makeText(this, "Unregistering", Toast.LENGTH_SHORT).show()
-        unregisterApp(this)
+        up.unregisterApp(this)
     }
 
     fun sendNotification(view: View) {
