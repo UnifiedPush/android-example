@@ -27,7 +27,7 @@ class Notifier(var context: Context){
         }
 
         val notification =
-            notificationBuilder.setSmallIcon(context.applicationInfo.icon) // the status icon
+            notificationBuilder.setSmallIcon(R.drawable.ic_launcher_notification) // the status icon
                 .setTicker(text) // the status text
                 .setWhen(System.currentTimeMillis()) // the time stamp
                 .setContentTitle(title) // the label of the entry
