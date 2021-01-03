@@ -2,6 +2,7 @@ package org.unifiedpush.example
 
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import org.unifiedpush.android.connector.MessagingReceiver
 import org.unifiedpush.android.connector.MessagingReceiverHandler
 import java.net.URLDecoder
@@ -23,6 +24,14 @@ val handler = object: MessagingReceiverHandler{
         broadcastIntent.putExtra("endpoint", endpoint)
         broadcastIntent.putExtra("registered", "true")
         context.sendBroadcast(broadcastIntent)
+    }
+
+    override fun onRegistrationFailed(context: Context?) {
+        Toast.makeText(context, "Registration Failed", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onRegistrationRefused(context: Context?) {
+        Toast.makeText(context, "Registration is Refused", Toast.LENGTH_SHORT).show()
     }
 
     override fun onUnregistered(context: Context?){
