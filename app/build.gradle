@@ -12,7 +12,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0-beta.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -40,7 +40,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'com.android.volley:dc-volley:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation 'com.github.UnifiedPush:UP-lib:332bcdd07b'
+    implementation 'com.github.UnifiedPush:UP-lib:1.0.0-beta.1'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
