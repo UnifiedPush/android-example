@@ -1,2 +1,4 @@
 include ':app'
+//toDevMain//include ':connector'
+//toDevFcm//include ':distributor'
 rootProject.name = "UP - example"
