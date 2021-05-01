@@ -19,11 +19,11 @@ jobs:
         with:
           name: builds
           path: |
-            example/app/build/outputs/apk/mainFlavor/debug/app-mainFlavor-debug.apk
-            example/app/build/outputs/apk/fcm/debug/app-fcm-debug.apk
+            app/build/outputs/apk/mainFlavor/debug/app-mainFlavor-debug.apk
+            app/build/outputs/apk/fcm/debug/app-fcm-debug.apk
       - if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          cd example/app/build/outputs/apk/mainFlavor/release/
+          cd app/build/outputs/apk/mainFlavor/release/
           echo $RELEASE_KEY | base64 -d > release-key.jks
           jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore release-key.jks -storepass $STOREPASS -keypass $KEYPASS app-mainFlavor-release-unsigned.apk unifiedpush
           jarsigner -verify app-mainFlavor-release-unsigned.apk
@@ -43,7 +43,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: example/app/build/outputs/apk/*/release/UP-Example*.apk
+          file: app/build/outputs/apk/*/release/UP-Example*.apk
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true
