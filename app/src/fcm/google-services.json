@@ -1,0 +1,40 @@
+
+{
+  "project_info": {
+    "project_number": "64518491375",
+    "project_id": "unifiedpush-3f07b",
+    "storage_bucket": "unifiedpush-3f07b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:64518491375:android:839eaf67570270e2b69f1a",
+        "android_client_info": {
+          "package_name": "org.unifiedpush.example"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "64518491375-f8ds3h419jcbesmform13mdl2kcg0ois.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVSqffMY71m_Jp1chpq4FpZdQ1UTtU4a0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "64518491375-f8ds3h419jcbesmform13mdl2kcg0ois.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

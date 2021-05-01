@@ -1,3 +1,6 @@
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
@@ -23,6 +26,26 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions "version"
+    productFlavors {
+        mainFlavor {
+            dimension "version"
+        }
+
+        fcm {
+            dimension "version"
+            versionNameSuffix "-fcm"
+        }
+    }
+
+    sourceSets {
+        fcm {
+            manifest.srcFile "src/fcm/AndroidManifest.xml"
+            java.srcDirs = ['src/main/java', 'src/fcm/java']
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -33,6 +56,8 @@ android {
 }
 
 dependencies {
+    ext.connector = 'com.github.UnifiedPush:android-connector:1.1.0'
+    ext.embedded_distrib = 'com.github.UnifiedPush:android-embedded_fcm_distributor:1.0.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.3.2'
@@ -40,8 +65,42 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'com.android.volley:dc-volley:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation project(':connector')
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    //Flavors
+    mainFlavorImplementation connector  //delToDevMain//
+//toDevMain//    mainFlavorImplementation project(':connector')
+
+    fcmImplementation connector
+    fcmImplementation embedded_distrib  //delToDevFcm//
+//toDevFcm//    fcmImplementation  project(':distributor')
+}
+
+def getCurrentFlavor() {
+    Gradle gradle = getGradle()
+    String  tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
+
+    Pattern pattern
+
+    if( tskReqStr.contains( "assemble" ) )
+        pattern = Pattern.compile("assemble(\\w+)")
+    else
+        pattern = Pattern.compile("generate(\\w+)")
+
+    Matcher matcher = pattern.matcher( tskReqStr )
+
+    if( matcher.find() )
+        return matcher.group(1).toLowerCase()
+    else
+    {
+        println "NO MATCH FOUND"
+        return ""
+    }
+}
+
+println("Flavor: ${getCurrentFlavor()}")
+if ( getCurrentFlavor() == "fcm" ){
+    apply plugin: 'com.google.gms.google-services'
 }
