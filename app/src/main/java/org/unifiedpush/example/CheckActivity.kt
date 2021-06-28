@@ -68,6 +68,10 @@ class CheckActivity : Activity() {
         up.unregisterApp(this)
     }
 
+    fun reregister(view: View) {
+        up.registerAppWithDialog(this)
+    }
+
     fun sendNotification(view: View) {
         val requestQueue: RequestQueue = Volley.newRequestQueue(this)
         val url = endpoint
