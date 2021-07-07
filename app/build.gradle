@@ -74,7 +74,11 @@ dependencies {
 //toDevMain//    mainFlavorImplementation project(':connector')
 
     fcmImplementation connector
-    fcmImplementation embedded_distrib  //delToDevFcm//
+    fcmImplementation(embedded_distrib) {  //delToDevFcm//
+        exclude group: 'com.google.firebase', module: 'firebase-core'  //delToDevFcm//
+        exclude group: 'com.google.firebase', module: 'firebase-analytics'  //delToDevFcm//
+        exclude group: 'com.google.firebase', module: 'firebase-measurement-connector'  //delToDevFcm//
+    }  //delToDevFcm//
 //toDevFcm//    fcmImplementation  project(':distributor')
 }
 
