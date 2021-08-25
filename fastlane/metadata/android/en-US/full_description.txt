@@ -1,0 +1,5 @@
+This application is a generic application using UnifiedPush. It can be used to test your settings.
+
+You need to install an UnifiedPush distributor for this to work.
+
+More information at https://unifiedpush.org

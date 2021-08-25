@@ -1,0 +1,2 @@
+* Add fastlane to publish on fdroid
+* Update dependencies
