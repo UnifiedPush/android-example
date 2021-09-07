@@ -13,7 +13,7 @@ val handler = object: MessagingReceiverHandler{
         val params= dict.associate { try{it.split("=")[0] to it.split("=")[1]}catch (e: Exception){"" to ""} }
         val text = params["message"]?: "New notification"
         val priority = params["priority"]?.toInt()?: 8
-        val title = params["title"]?: "UP - Example"
+        val title = params["title"]?: context!!.getString(R.string.app_name)
         Notifier(context!!).sendNotification(title,text,priority)
     }
 
@@ -41,6 +41,8 @@ val handler = object: MessagingReceiverHandler{
         broadcastIntent.putExtra("endpoint", "")
         broadcastIntent.putExtra("registered", "false")
         context.sendBroadcast(broadcastIntent)
+        val appName = context.getString(R.string.app_name)
+        Toast.makeText(context, "$appName is unregistered", Toast.LENGTH_SHORT).show()
     }
 }
 
