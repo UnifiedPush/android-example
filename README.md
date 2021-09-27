@@ -6,3 +6,7 @@ To send a notification to this app, you can use curl:
 ```
 curl -X POST $endpoint --data "title={Your Title}&message={Your Message}"
 ```
+
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="90">](https://f-droid.org/packages/org.unifiedpush.example/)
