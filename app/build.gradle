@@ -57,7 +57,7 @@ android {
 
 dependencies {
     ext.connector = 'com.github.UnifiedPush:android-connector:1.2.0'
-    ext.embedded_distrib = 'com.github.UnifiedPush:android-embedded_fcm_distributor:1.1.0'
+    ext.embedded_distrib = 'com.github.UnifiedPush:android-embedded_fcm_distributor:1.1.2'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.6.0'
