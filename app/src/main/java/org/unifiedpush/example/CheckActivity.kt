@@ -14,14 +14,15 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import org.unifiedpush.android.connector.*
+import org.unifiedpush.android.connector.UnifiedPush
+import org.unifiedpush.example.Utils.updateRegistrationInfo
 
 const val UPDATE = "org.unifiedpush.example.android.action.UPDATE"
 
 class CheckActivity : Activity() {
 
     private var endpoint = ""
-    private val up = Registration()
+    private val featureByteMessage = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,29 +36,36 @@ class CheckActivity : Activity() {
             addAction(UPDATE)
         }
         registerReceiver(checkReceiver, intentFilter)
-        up.registerAppWithDialog(this)
+        if (featureByteMessage) {
+            UnifiedPush.registerAppWithDialog(
+                this,
+                features = arrayListOf(UnifiedPush.FEATURE_BYTES_MESSAGE)
+            )
+        } else {
+            UnifiedPush.registerAppWithDialog(this)
+        }
     }
 
     override fun onDestroy() {
-        up.unregisterApp(this)
+        UnifiedPush.unregisterApp(this)
         unregisterReceiver(checkReceiver)
         super.onDestroy()
     }
 
     private val checkReceiver: BroadcastReceiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            when(intent!!.action){
+            when(intent!!.action) {
                 UPDATE -> {
                     endpoint = intent.getStringExtra("endpoint")?: ""
-                    val registered = intent.getStringExtra("registered")?: "false"
+                    val registered = intent.getBooleanExtra("registered", false)
                     findViewById<TextView>(R.id.text_result_register).apply {
-                        text = registered
+                        text = registered.toString()
                     }
                     findViewById<TextView>(R.id.text_gateway_value).apply {
                         text = endpoint
                     }
                     val btn: Button = findViewById<View>(R.id.button_notify) as Button
-                    btn.isEnabled = (registered == "true")
+                    btn.isEnabled = registered
                 }
             }
         }
@@ -65,11 +73,20 @@ class CheckActivity : Activity() {
 
     fun unregister(view: View) {
         Toast.makeText(this, "Unregistering", Toast.LENGTH_SHORT).show()
-        up.unregisterApp(this)
+        UnifiedPush.unregisterApp(this)
+        UnifiedPush.forceRemoveDistributor(this)
+        updateRegistrationInfo(this, "", false)
     }
 
-    fun reregister(view: View) {
-        up.registerAppWithDialog(this)
+    fun reRegister(view: View) {
+        if (featureByteMessage) {
+            UnifiedPush.registerAppWithDialog(
+                this,
+                features = arrayListOf(UnifiedPush.FEATURE_BYTES_MESSAGE)
+            )
+        } else {
+            UnifiedPush.registerAppWithDialog(this)
+        }
     }
 
     fun sendNotification(view: View) {
