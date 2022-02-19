@@ -22,7 +22,7 @@ const val UPDATE = "org.unifiedpush.example.android.action.UPDATE"
 class CheckActivity : Activity() {
 
     private var endpoint = ""
-    private val featureByteMessage = true
+    private val featureByteMessage = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
