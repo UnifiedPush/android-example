@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import org.unifiedpush.android.connector.EXTRA_BYTES_MESSAGE
 import org.unifiedpush.android.connector.LOG_TAG
 import org.unifiedpush.android.connector.MessagingReceiver
 import org.unifiedpush.android.connector.UnifiedPush
@@ -44,6 +45,13 @@ class CustomReceiver : MessagingReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(LOG_TAG, "event received")
+        if (CheckActivity.featureByteMessage) {
+            Log.d(
+                LOG_TAG,
+                "Bytes: " + String(intent.getByteArrayExtra(EXTRA_BYTES_MESSAGE)
+                    ?: ByteArray(0))
+            )
+        }
         super.onReceive(context, intent)
     }
 }
