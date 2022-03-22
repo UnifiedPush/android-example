@@ -48,8 +48,9 @@ class CustomReceiver : MessagingReceiver() {
         if (CheckActivity.featureByteMessage) {
             Log.d(
                 LOG_TAG,
-                "Bytes: " + String(intent.getByteArrayExtra(EXTRA_BYTES_MESSAGE)
-                    ?: ByteArray(0))
+                "Bytes: " + intent.getByteArrayExtra(EXTRA_BYTES_MESSAGE)?.joinToString("") { byte ->
+                    "%02x".format(byte)
+                }
             )
         }
         super.onReceive(context, intent)
