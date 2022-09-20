@@ -49,6 +49,20 @@ android {
     namespace 'org.unifiedpush.example'
 }
 
+if (project.hasProperty('sign')) {
+    android {
+        signingConfigs {
+            release {
+                storeFile file(System.getenv("RELEASE_STORE_FILE"))
+                storePassword System.getenv("RELEASE_STORE_PASSWORD")
+                keyAlias System.getenv("RELEASE_KEY_ALIAS")
+                keyPassword System.getenv("RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
+    android.buildTypes.release.signingConfig android.signingConfigs.release
+}
+
 dependencies {
     ext.connector = 'com.github.UnifiedPush:android-connector:2.1.0'
     ext.embedded_distrib = 'com.github.UnifiedPush:android-embedded_fcm_distributor:2.2.0'
