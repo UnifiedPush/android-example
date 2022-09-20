@@ -1,0 +1,4 @@
+Bump dependencies
+Target SDK 33
+Accept user certificates
+Format byte message
