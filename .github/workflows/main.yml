@@ -32,3 +32,4 @@ jobs:
           file: app/build/outputs/apk/UP-Example*.apk
           tag: ${{ github.ref }}
           overwrite: true
+          file_glob: true
