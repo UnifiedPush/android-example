@@ -64,7 +64,7 @@ if (project.hasProperty('sign')) {
 }
 
 dependencies {
-    ext.connector = 'com.github.UnifiedPush:android-connector:2.1.0'
+    ext.connector = 'com.github.UnifiedPush:android-connector:2.1.1'
     ext.embedded_distrib = 'com.github.UnifiedPush:android-embedded_fcm_distributor:2.2.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
