@@ -64,12 +64,12 @@ if (project.hasProperty('sign')) {
 }
 
 dependencies {
-    ext.connector = 'com.github.UnifiedPush:android-connector:2.1.0'
+    ext.connector = 'com.github.UnifiedPush:android-connector:2.1.1'
     ext.embedded_distrib = 'com.github.UnifiedPush:android-embedded_fcm_distributor:2.2.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.7.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
