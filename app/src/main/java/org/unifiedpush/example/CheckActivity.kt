@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -24,6 +25,7 @@ class CheckActivity : Activity() {
     companion object {
         private var endpoint = ""
         const val featureByteMessage = false
+        private val TAG = CheckActivity::class.java.simpleName
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,8 +99,15 @@ class CheckActivity : Activity() {
         val stringRequest: StringRequest =
             object :
                 StringRequest(Method.POST, url,
-                    Response.Listener<String> { Toast.makeText(applicationContext, "Done", Toast.LENGTH_SHORT).show() },
-                    Response.ErrorListener { Toast.makeText(applicationContext, "An error occurred", Toast.LENGTH_SHORT).show() }) {
+                    Response.Listener {
+                        Toast.makeText(applicationContext, "Done", Toast.LENGTH_SHORT).show()
+                        findViewById<TextView>(R.id.error_text).text = ""
+                    },
+                    Response.ErrorListener { e ->
+                        Toast.makeText(applicationContext, "An error occurred.", Toast.LENGTH_SHORT).show()
+                        Log.e(TAG, "An error occurred while testing the endpoint:\n$e")
+                        findViewById<TextView>(R.id.error_text).text = "Error:\n$e"
+                    }) {
                 override fun getParams(): MutableMap<String, String> {
                     val params = mutableMapOf<String, String>()
                     params["title"] = "Test"
