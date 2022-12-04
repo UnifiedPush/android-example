@@ -1,0 +1,2 @@
+Bump dependencies
+Print error when test fails
