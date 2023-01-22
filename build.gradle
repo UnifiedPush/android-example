@@ -19,7 +19,13 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+        maven {
+            url 'https://jitpack.io'
+            content {
+                includeModule 'com.github.UnifiedPush', 'android-connector'
+                includeModule 'com.github.UnifiedPush', 'android-embedded_fcm_distributor'
+            }
+        }
     }
 }
 
