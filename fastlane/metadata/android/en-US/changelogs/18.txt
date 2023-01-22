@@ -1,0 +1,2 @@
+- Lower minSdkVersion
+- Update dependencies
