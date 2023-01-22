@@ -12,7 +12,6 @@ android {
 
     defaultConfig {
         applicationId "org.unifiedpush.example"
-        minSdkVersion 16
         targetSdkVersion 33
         versionCode 17
         versionName "1.4.1"
@@ -30,10 +29,12 @@ android {
     flavorDimensions "version"
     productFlavors {
         mainFlavor {
+            minSdkVersion 16
             dimension "version"
         }
 
         fcm {
+            minSdkVersion 19
             dimension "version"
             versionNameSuffix "-fcm"
         }

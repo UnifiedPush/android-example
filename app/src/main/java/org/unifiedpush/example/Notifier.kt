@@ -35,7 +35,12 @@ class Notifier(var context: Context){
                 .setPriority(priority)
                 .build()
 
-        gNM!!.notify(ThreadLocalRandom.current().nextInt(), notification)
+        val notificationId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ThreadLocalRandom.current().nextInt()
+        } else {
+            13737
+        }
+        gNM!!.notify(notificationId, notification)
     }
 
     private fun createNotificationChannel() {
