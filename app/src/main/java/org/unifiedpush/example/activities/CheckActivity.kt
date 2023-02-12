@@ -1,10 +1,7 @@
-package org.unifiedpush.example
+package org.unifiedpush.example.activities
 
 import android.app.Activity
 import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -16,9 +13,10 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.unifiedpush.android.connector.UnifiedPush
-import org.unifiedpush.example.Utils.updateRegistrationInfo
-
-const val UPDATE = "org.unifiedpush.example.android.action.UPDATE"
+import org.unifiedpush.example.R
+import org.unifiedpush.example.registerOnRegistrationUpdate
+import org.unifiedpush.example.updateRegistrationInfo
+import org.unifiedpush.example.utils.Notifier
 
 class CheckActivity : Activity() {
 
@@ -28,6 +26,9 @@ class CheckActivity : Activity() {
         private val TAG = CheckActivity::class.java.simpleName
     }
 
+    private var checkReceiver: BroadcastReceiver? = null
+    private var notifier: Notifier? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_check)
@@ -35,11 +36,10 @@ class CheckActivity : Activity() {
         val btn: Button = findViewById<View>(R.id.button_notify) as Button
         btn.isEnabled = false
 
-
-        val intentFilter = IntentFilter().apply {
-            addAction(UPDATE)
+        checkReceiver = registerOnRegistrationUpdate { registered, endpoint ->
+            onRegistrationUpdate(registered, endpoint)
         }
-        registerReceiver(checkReceiver, intentFilter)
+
         if (featureByteMessage) {
             UnifiedPush.registerAppWithDialog(
                 this,
@@ -52,34 +52,29 @@ class CheckActivity : Activity() {
 
     override fun onDestroy() {
         UnifiedPush.unregisterApp(this)
-        unregisterReceiver(checkReceiver)
+        checkReceiver?.let {
+            unregisterReceiver(it)
+        }
         super.onDestroy()
     }
 
-    private val checkReceiver: BroadcastReceiver = object: BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            when(intent!!.action) {
-                UPDATE -> {
-                    endpoint = intent.getStringExtra("endpoint")?: ""
-                    val registered = intent.getBooleanExtra("registered", false)
-                    findViewById<TextView>(R.id.text_result_register).apply {
-                        text = registered.toString()
-                    }
-                    findViewById<TextView>(R.id.text_gateway_value).apply {
-                        text = endpoint
-                    }
-                    val btn: Button = findViewById<View>(R.id.button_notify) as Button
-                    btn.isEnabled = registered
-                }
-            }
+    private fun onRegistrationUpdate(registered: Boolean, new_endpoint: String?) {
+        endpoint = new_endpoint ?: ""
+        findViewById<TextView>(R.id.text_result_register).apply {
+            text = registered.toString()
         }
+        findViewById<TextView>(R.id.text_gateway_value).apply {
+            text = endpoint ?: ""
+        }
+        val btn: Button = findViewById<View>(R.id.button_notify) as Button
+        btn.isEnabled = registered
     }
 
     fun unregister(view: View) {
         Toast.makeText(this, "Unregistering", Toast.LENGTH_SHORT).show()
         UnifiedPush.unregisterApp(this)
         UnifiedPush.forceRemoveDistributor(this)
-        updateRegistrationInfo(this, "", false)
+        updateRegistrationInfo(false, "")
     }
 
     fun reRegister(view: View) {
@@ -98,7 +93,8 @@ class CheckActivity : Activity() {
         val url = endpoint
         val stringRequest: StringRequest =
             object :
-                StringRequest(Method.POST, url,
+                StringRequest(
+                    Method.POST, url,
                     Response.Listener {
                         Toast.makeText(applicationContext, "Done", Toast.LENGTH_SHORT).show()
                         findViewById<TextView>(R.id.error_text).text = ""
@@ -107,7 +103,8 @@ class CheckActivity : Activity() {
                         Toast.makeText(applicationContext, "An error occurred.", Toast.LENGTH_SHORT).show()
                         Log.e(TAG, "An error occurred while testing the endpoint:\n$e")
                         findViewById<TextView>(R.id.error_text).text = "Error:\n$e"
-                    }) {
+                    }
+                ) {
                 override fun getParams(): MutableMap<String, String> {
                     val params = mutableMapOf<String, String>()
                     params["title"] = "Test"

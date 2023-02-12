@@ -1,14 +1,14 @@
-package org.unifiedpush.example
+package org.unifiedpush.example.utils
 
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import org.unifiedpush.example.R
 import java.util.concurrent.ThreadLocalRandom
 
-
-class Notifier(var context: Context){
+class Notifier(var context: Context) {
     /** For showing and hiding our notification.  */
     private var gNM: NotificationManager? = null
     private var channelId = "UP-example-ID"
@@ -19,7 +19,7 @@ class Notifier(var context: Context){
         gNM = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
 
-    fun sendNotification(title: String,text: String, priority: Int){
+    fun showNotification(title: String, text: String, priority: Int) {
         val notificationBuilder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder(context, channelId)
         } else {

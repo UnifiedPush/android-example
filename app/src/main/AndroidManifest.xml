@@ -14,7 +14,7 @@
         android:theme="@style/Theme.UPExample">
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CheckActivity"
+            android:name=".activities.CheckActivity"
             android:exported="false" />
         <receiver
             android:enabled="true"
