@@ -1,4 +1,4 @@
-package org.unifiedpush.example
+package org.unifiedpush.example.utils
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -7,17 +7,15 @@ import android.content.IntentFilter
 
 private const val UPDATE = "org.unifiedpush.example.android.action.UPDATE"
 
-fun Context.updateRegistrationInfo(registered: Boolean, endpoint: String?) {
+fun Context.updateRegistrationInfo() {
     val broadcastIntent = Intent()
     broadcastIntent.`package` = this.packageName
     broadcastIntent.action = UPDATE
-    broadcastIntent.putExtra("registered", registered)
-    broadcastIntent.putExtra("endpoint", endpoint)
     this.sendBroadcast(broadcastIntent)
 }
 
 fun Context.registerOnRegistrationUpdate(
-    onUpdate: (registered: Boolean, endpoint: String?) -> Unit
+    onUpdate: () -> Unit
 ): BroadcastReceiver {
     val intentFilter = IntentFilter().apply {
         addAction(UPDATE)
@@ -26,9 +24,7 @@ fun Context.registerOnRegistrationUpdate(
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent!!.action) {
                 UPDATE -> {
-                    val registered = intent.getBooleanExtra("registered", false)
-                    val endpoint = intent.getStringExtra("endpoint")
-                    onUpdate(registered, endpoint)
+                    onUpdate()
                 }
             }
         }

@@ -2,9 +2,10 @@ package org.unifiedpush.example.activities
 
 import android.app.Activity
 import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -14,71 +15,62 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.example.R
-import org.unifiedpush.example.registerOnRegistrationUpdate
-import org.unifiedpush.example.updateRegistrationInfo
-import org.unifiedpush.example.utils.Notifier
+import org.unifiedpush.example.Store
+import org.unifiedpush.example.activities.MainActivity.Companion.goToMainActivity
+import org.unifiedpush.example.utils.TAG
+import org.unifiedpush.example.utils.registerOnRegistrationUpdate
+import org.unifiedpush.example.utils.updateRegistrationInfo
 
 class CheckActivity : Activity() {
 
-    companion object {
-        private var endpoint = ""
-        const val featureByteMessage = false
-        private val TAG = CheckActivity::class.java.simpleName
-    }
-
-    private var checkReceiver: BroadcastReceiver? = null
-    private var notifier: Notifier? = null
+    private var internalReceiver: BroadcastReceiver? = null
+    private lateinit var store: Store
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_check)
 
-        val btn: Button = findViewById<View>(R.id.button_notify) as Button
-        btn.isEnabled = false
+        store = Store(this)
 
-        checkReceiver = registerOnRegistrationUpdate { registered, endpoint ->
-            onRegistrationUpdate(registered, endpoint)
+        internalReceiver = registerOnRegistrationUpdate {
+            setEndpointOrGoToMain()
         }
-
-        if (featureByteMessage) {
-            UnifiedPush.registerAppWithDialog(
-                this,
-                features = arrayListOf(UnifiedPush.FEATURE_BYTES_MESSAGE)
-            )
-        } else {
-            UnifiedPush.registerAppWithDialog(this)
-        }
+        setEndpointOrGoToMain()
+        findViewById<Button>(R.id.button_unregister).setOnClickListener { unregister() }
+        findViewById<Button>(R.id.button_notify).setOnClickListener { sendNotification() }
+        findViewById<Button>(R.id.button_reregister).setOnClickListener { reRegister() }
     }
 
     override fun onDestroy() {
-        UnifiedPush.unregisterApp(this)
-        checkReceiver?.let {
+        internalReceiver?.let {
             unregisterReceiver(it)
         }
         super.onDestroy()
     }
 
-    private fun onRegistrationUpdate(registered: Boolean, new_endpoint: String?) {
-        endpoint = new_endpoint ?: ""
-        findViewById<TextView>(R.id.text_result_register).apply {
-            text = registered.toString()
+    private fun setEndpointOrGoToMain() {
+        if (store.endpoint == null) {
+            internalReceiver?.let {
+                unregisterReceiver(it)
+            }
+            goToMainActivity(this)
+        } else {
+            findViewById<TextView>(R.id.text_gateway_value).apply {
+                text = store.endpoint ?: ""
+            }
         }
-        findViewById<TextView>(R.id.text_gateway_value).apply {
-            text = endpoint ?: ""
-        }
-        val btn: Button = findViewById<View>(R.id.button_notify) as Button
-        btn.isEnabled = registered
     }
 
-    fun unregister(view: View) {
+    private fun unregister() {
         Toast.makeText(this, "Unregistering", Toast.LENGTH_SHORT).show()
+        store.endpoint = null
         UnifiedPush.unregisterApp(this)
         UnifiedPush.forceRemoveDistributor(this)
-        updateRegistrationInfo(false, "")
+        updateRegistrationInfo()
     }
 
-    fun reRegister(view: View) {
-        if (featureByteMessage) {
+    private fun reRegister() {
+        if (store.featureByteMessage) {
             UnifiedPush.registerAppWithDialog(
                 this,
                 features = arrayListOf(UnifiedPush.FEATURE_BYTES_MESSAGE)
@@ -86,11 +78,12 @@ class CheckActivity : Activity() {
         } else {
             UnifiedPush.registerAppWithDialog(this)
         }
+        Toast.makeText(applicationContext, "Registration sent.", Toast.LENGTH_SHORT).show()
     }
 
-    fun sendNotification(view: View) {
+    private fun sendNotification() {
         val requestQueue: RequestQueue = Volley.newRequestQueue(this)
-        val url = endpoint
+        val url = store.endpoint
         val stringRequest: StringRequest =
             object :
                 StringRequest(
@@ -114,5 +107,15 @@ class CheckActivity : Activity() {
                 }
             }
         requestQueue.add(stringRequest)
+    }
+
+    companion object {
+        fun goToCheckActivity(context: Context) {
+            val intent = Intent(
+                context,
+                CheckActivity::class.java
+            )
+            context.startActivity(intent)
+        }
     }
 }

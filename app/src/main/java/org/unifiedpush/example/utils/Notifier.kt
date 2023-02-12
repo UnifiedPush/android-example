@@ -48,7 +48,7 @@ class Notifier(var context: Context) {
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && channelId.isNotEmpty()) {
             val name = context.packageName
-            val descriptionText = "UP - example"
+            val descriptionText = "UP-Example"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(channelId, name, importance).apply {
                 description = descriptionText
