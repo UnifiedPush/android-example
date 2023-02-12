@@ -29,7 +29,7 @@
             android:exported="false" />
         <receiver
             android:enabled="true"
-            android:name=".CustomReceiver"
+            android:name=".UnifiedPushReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="org.unifiedpush.android.connector.MESSAGE"/>

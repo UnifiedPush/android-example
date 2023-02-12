@@ -12,7 +12,7 @@ import org.unifiedpush.example.utils.TAG
 import org.unifiedpush.example.utils.updateRegistrationInfo
 import java.net.URLDecoder
 
-class CustomReceiver : MessagingReceiver() {
+class UnifiedPushReceiver : MessagingReceiver() {
 
     private lateinit var store: Store
     override fun onMessage(context: Context, message: ByteArray, instance: String) {
