@@ -6,6 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +28,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
+        setSupportActionBar(findViewById(R.id.toolbar))
+        findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerForActivityResult(
                 ActivityResultContracts.RequestPermission()
@@ -54,6 +60,38 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_feature_byte_message -> {
+                item.isChecked = !item.isChecked
+                store.featureByteMessage = item.isChecked
+
+                // Keep the overlay menu open after an item is selected
+                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
+                item.actionView = View(this)
+                item.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+                    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                        return false
+                    }
+
+                    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                        return false
+                    }
+                })
+                return false
+            }
+            else -> {
+                return true
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.overlay_main, menu)
+        menu?.findItem(R.id.action_feature_byte_message)?.isChecked = store.featureByteMessage
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onDestroy() {
