@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">UP-Example</string>
-    <string name="about">This is an example application using UnifiedPush library.\n\nBy clicking on the register button, you will have to chose between the distributors installed on your device the one to provide push notifications.</string>
+    <string name="about">This is an example of an application using the UnifiedPush library.\n\nBy clicking on the registration button, you will have to choose between the distributors installed on your device the one that will provide the push notifications.</string>
 </resources>
