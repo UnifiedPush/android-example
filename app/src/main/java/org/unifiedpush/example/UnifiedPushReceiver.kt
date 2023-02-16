@@ -37,14 +37,13 @@ class UnifiedPushReceiver : MessagingReceiver() {
                     .withRecipientPrivateKey(keyPair.private as ECPrivateKey)
                     .build()
                 decodeMessage(
-                    context,
                     hybridDecrypt.decrypt(message, null).toString(Charsets.UTF_8)
                 )
             } catch (_: Exception) {
                 mapOf("message" to "Could not decrypt webpush message")
             }
         } else {
-            decodeMessage(context, message.toString(Charsets.UTF_8))
+            decodeMessage(message.toString(Charsets.UTF_8))
         }
         val text = params["message"] ?: "Internal error"
         val priority = params["priority"]?.toInt() ?: 8
@@ -86,12 +85,13 @@ class UnifiedPushReceiver : MessagingReceiver() {
         super.onReceive(context, intent)
     }
 
-    private fun decodeMessage(context: Context, message: String): Map<String, String> {
+    private fun decodeMessage(message: String): Map<String, String> {
         val params = try {
-            val dict = URLDecoder.decode(message, "UTF-8").split("&")
+            val dict = message.split("&")
             dict.associate {
                 try {
-                    it.split("=")[0] to it.split("=")[1]
+                    URLDecoder.decode(it.split("=")[0], "UTF-8") to
+                        URLDecoder.decode(it.split("=")[1], "UTF-8")
                 } catch (e: Exception) {
                     "" to ""
                 }
