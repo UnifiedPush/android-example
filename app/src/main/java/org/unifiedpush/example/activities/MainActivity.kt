@@ -111,6 +111,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 store.webpush = check
                 store.featureByteMessage = check
+                // gen authSecret and keyPair
+                store.authSecret
+                store.keyPair
                 false
             }
         }
