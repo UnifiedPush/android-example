@@ -69,7 +69,7 @@ dependencies {
     ext.embedded_distrib = 'com.github.UnifiedPush:android-embedded_fcm_distributor:2.2.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'com.google.crypto.tink:apps-webpush:1.7.0'
     implementation 'com.android.volley:volley:1.2.1'
