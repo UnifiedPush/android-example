@@ -15,6 +15,7 @@ android {
         targetSdkVersion 33
         versionCode 18
         versionName "1.4.2"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -74,6 +75,7 @@ dependencies {
     implementation 'com.google.crypto.tink:apps-webpush:1.7.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation "androidx.multidex:multidex:2.0.1"
 
     //Flavors
     mainFlavorImplementation connector  //delToDevMain//
