@@ -13,8 +13,8 @@ android {
     defaultConfig {
         applicationId "org.unifiedpush.example"
         targetSdkVersion 33
-        versionCode 20
-        versionName "1.5.1"
+        versionCode 21
+        versionName "1.5.2"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

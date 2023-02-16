@@ -1,0 +1,7 @@
+- Add WebPush support
+- Add toggle to require BYTES_MESSAGE feature
+- Always go to the check activity if registered
+- Correct the description in the main activity
+- Minify the app
+- Fix WebPush when selected during the first run
+- Fix URLDecode post parameters
