@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         store = Store(this)
         if (store.endpoint != null) {
             goToCheckActivity(this)
+            finish()
         } else {
             internalReceiver = registerOnRegistrationUpdate {
                 if (store.endpoint != null) {
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity() {
                         unregisterReceiver(it)
                     }
                     goToCheckActivity(this)
+                    finish()
                 }
             }
             findViewById<Button>(R.id.register_button).setOnClickListener {
@@ -63,12 +65,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Keep the overlay menu open after an item is selected
         when (item.itemId) {
-            R.id.action_feature_byte_message -> {
-                item.isChecked = !item.isChecked
-                store.featureByteMessage = item.isChecked
-
-                // Keep the overlay menu open after an item is selected
+            R.id.action_feature_byte_message,
+            R.id.action_webpush -> {
                 item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
                 item.actionView = View(this)
                 item.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
@@ -90,15 +90,32 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.overlay_main, menu)
-        menu?.findItem(R.id.action_feature_byte_message)?.isChecked = store.featureByteMessage
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onDestroy() {
-        internalReceiver?.let {
-            unregisterReceiver(it)
+        menu?.findItem(R.id.action_feature_byte_message)?.apply {
+            isChecked = store.featureByteMessage
+            isEnabled = !store.webpush
+            setOnMenuItemClickListener {
+                val check = !it.isChecked
+                it.isChecked = check
+                store.featureByteMessage = check
+                false
+            }
         }
-        super.onDestroy()
+        menu?.findItem(R.id.action_webpush)?.apply {
+            isChecked = store.webpush
+            setOnMenuItemClickListener {
+                val check = !it.isChecked
+                it.isChecked = check
+                menu.findItem(R.id.action_feature_byte_message)?.apply {
+                    isChecked = check
+                    isEnabled = !check
+                }
+                store.webpush = check
+                store.featureByteMessage = check
+                false
+            }
+        }
+
+        return super.onCreateOptionsMenu(menu)
     }
 
     companion object {

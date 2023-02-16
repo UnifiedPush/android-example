@@ -6,4 +6,9 @@
         app:showAsAction="never"
         android:title="feature BYTES_MESSAGE"
         android:checkable="true" />
+
+    <item android:id="@+id/action_webpush"
+        app:showAsAction="never"
+        android:title="Web Push"
+        android:checkable="true" />
 </menu>
