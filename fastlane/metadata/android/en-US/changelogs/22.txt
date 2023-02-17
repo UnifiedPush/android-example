@@ -1,0 +1,2 @@
+- Fix activities lifecycle
+- Fix registration with FEATURE_BYTES_MESSAGE
