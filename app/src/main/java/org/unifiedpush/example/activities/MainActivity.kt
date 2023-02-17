@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         store = Store(this)
         findViewById<Button>(R.id.register_button).setOnClickListener {
             if (store.featureByteMessage) {
-                registerAppWithDialog(this, FEATURE_BYTES_MESSAGE)
+                registerAppWithDialog(this, features = arrayListOf(FEATURE_BYTES_MESSAGE))
             } else {
                 registerAppWithDialog(this)
             }
