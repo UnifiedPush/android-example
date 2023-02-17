@@ -41,26 +41,34 @@ class MainActivity : AppCompatActivity() {
         }
 
         store = Store(this)
+        findViewById<Button>(R.id.register_button).setOnClickListener {
+            if (store.featureByteMessage) {
+                registerAppWithDialog(this, FEATURE_BYTES_MESSAGE)
+            } else {
+                registerAppWithDialog(this)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
         if (store.endpoint != null) {
             goToCheckActivity(this)
             finish()
         } else {
             internalReceiver = registerOnRegistrationUpdate {
                 if (store.endpoint != null) {
-                    internalReceiver?.let {
-                        unregisterReceiver(it)
-                    }
                     goToCheckActivity(this)
                     finish()
                 }
             }
-            findViewById<Button>(R.id.register_button).setOnClickListener {
-                if (store.featureByteMessage) {
-                    registerAppWithDialog(this, FEATURE_BYTES_MESSAGE)
-                } else {
-                    registerAppWithDialog(this)
-                }
-            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        internalReceiver?.let {
+            unregisterReceiver(it)
         }
     }
 

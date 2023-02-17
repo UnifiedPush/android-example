@@ -32,10 +32,6 @@ class CheckActivity : Activity() {
 
         store = Store(this)
 
-        internalReceiver = registerOnRegistrationUpdate {
-            setEndpointOrGoToMain()
-        }
-        setEndpointOrGoToMain()
         findViewById<Button>(R.id.button_unregister).setOnClickListener { unregister() }
         findViewById<Button>(R.id.button_notify).setOnClickListener {
             ApplicationServer(this).sendNotification { error ->
@@ -61,11 +57,23 @@ class CheckActivity : Activity() {
         Log.d(TAG, "p256dh: ${WebPush.serializePublicKey(store.keyPair.public as ECPublicKey)}")
     }
 
+    override fun onResume() {
+        super.onResume()
+        internalReceiver = registerOnRegistrationUpdate {
+            setEndpointOrGoToMain()
+        }
+        setEndpointOrGoToMain()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        internalReceiver?.let {
+            unregisterReceiver(it)
+        }
+    }
+
     private fun setEndpointOrGoToMain() {
         if (store.endpoint == null) {
-            internalReceiver?.let {
-                unregisterReceiver(it)
-            }
             goToMainActivity(this)
             finish()
         } else {
