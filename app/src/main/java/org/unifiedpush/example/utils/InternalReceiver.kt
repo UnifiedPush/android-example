@@ -1,5 +1,6 @@
 package org.unifiedpush.example.utils
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -15,6 +16,7 @@ fun Context.updateRegistrationInfo() {
     this.sendBroadcast(broadcastIntent)
 }
 
+@SuppressLint("UnspecifiedRegisterReceiverFlag")
 fun Context.registerOnRegistrationUpdate(
     onUpdate: () -> Unit
 ): BroadcastReceiver {
