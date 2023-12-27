@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             if (store.featureByteMessage) {
                 registerAppWithDialog(this, features = arrayListOf(FEATURE_BYTES_MESSAGE))
             } else {
-                registerAppWithDialog(this)
+                registerAppWithDialog(this, features = arrayListOf())
             }
         }
     }
