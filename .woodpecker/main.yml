@@ -37,4 +37,3 @@ steps:
                 - UP-Example-fcm.apk
             fastlane: true
             package: true
-
