@@ -50,3 +50,11 @@ webpush(subinfo, message)
 ```
 
 To use it: `./notify.py My message here`
+
+## Development
+
+#### CI Secrets
+* `release_key`: keystore in base64
+* `release_store_password`: keystore password
+* `release_key_password`: key password, the key alias must be `unifiedpush`
+* `codeberg_token`: codeberg token for package, with `write:package` right (https://codeberg.org/user/settings/applications)
