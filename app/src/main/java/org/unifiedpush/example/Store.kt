@@ -1,6 +1,7 @@
 package org.unifiedpush.example
 
 import android.content.Context
+import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.example.utils.SerializedKeyPair
 import org.unifiedpush.example.utils.WebPush
 import java.security.KeyPair
@@ -13,12 +14,12 @@ private const val PREF_PUBKEY = "org.unifiedpush.example::store::pubkey"
 private const val PREF_PRIVKEY = "org.unifiedpush.example::store::privkey"
 private const val PREF_AUTHKEY = "org.unifiedpush.example::store::authkey"
 
-class Store(context: Context) {
+class Store(val context: Context) {
 
     private val prefs = context.getSharedPreferences(PREF_MASTER, Context.MODE_PRIVATE)
 
     var endpoint: String?
-        get() = prefs.getString(PREF_ENDPOINT, null)
+        get() = UnifiedPush.getAckDistributor(context)?.let { prefs.getString(PREF_ENDPOINT, null) }
         set(value) {
             if (value == null) {
                 prefs.edit().remove(PREF_ENDPOINT).apply()
