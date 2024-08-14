@@ -39,7 +39,7 @@ android {
         }
 
         fcm {
-            minSdkVersion 19
+            minSdkVersion 21
             dimension "version"
             versionNameSuffix "-fcm"
         }
