@@ -17,21 +17,24 @@ fun Context.updateRegistrationInfo() {
 }
 
 @SuppressLint("UnspecifiedRegisterReceiverFlag")
-fun Context.registerOnRegistrationUpdate(
-    onUpdate: () -> Unit
-): BroadcastReceiver {
-    val intentFilter = IntentFilter().apply {
-        addAction(UPDATE)
-    }
-    val checkReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            when (intent!!.action) {
-                UPDATE -> {
-                    onUpdate()
+fun Context.registerOnRegistrationUpdate(onUpdate: () -> Unit): BroadcastReceiver {
+    val intentFilter =
+        IntentFilter().apply {
+            addAction(UPDATE)
+        }
+    val checkReceiver: BroadcastReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context?,
+                intent: Intent?,
+            ) {
+                when (intent!!.action) {
+                    UPDATE -> {
+                        onUpdate()
+                    }
                 }
             }
         }
-    }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         this.registerReceiver(checkReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
     } else {

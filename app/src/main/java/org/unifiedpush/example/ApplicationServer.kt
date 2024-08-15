@@ -15,7 +15,6 @@ import java.security.interfaces.ECPublicKey
  * This class emulates an application server
  */
 class ApplicationServer(val context: Context) {
-
     private val store = Store(context)
 
     fun sendNotification(callback: (error: String?) -> Unit) {
@@ -42,7 +41,7 @@ class ApplicationServer(val context: Context) {
                         Toast.makeText(context, "An error occurred.", Toast.LENGTH_SHORT).show()
                         Log.e(TAG, "An error occurred while testing the endpoint:\n$e")
                         callback(e.toString())
-                    }
+                    },
                 ) {
                 override fun getParams(): MutableMap<String, String> {
                     val params = mutableMapOf<String, String>()
@@ -71,14 +70,14 @@ class ApplicationServer(val context: Context) {
                         Toast.makeText(context, "An error occurred.", Toast.LENGTH_SHORT).show()
                         Log.e(TAG, "An error occurred while testing the endpoint:\n$e")
                         callback(e.toString())
-                    }
+                    },
                 ) {
-
                 override fun getBody(): ByteArray {
-                    val hybridEncrypt = WebPushHybridEncrypt.Builder()
-                        .withAuthSecret(store.authSecret)
-                        .withRecipientPublicKey(store.keyPair.public as ECPublicKey)
-                        .build()
+                    val hybridEncrypt =
+                        WebPushHybridEncrypt.Builder()
+                            .withAuthSecret(store.authSecret)
+                            .withRecipientPublicKey(store.keyPair.public as ECPublicKey)
+                            .build()
                     return hybridEncrypt.encrypt("WebPush test".toByteArray(), null)
                 }
 
@@ -96,7 +95,11 @@ class ApplicationServer(val context: Context) {
         store.endpoint = endpoint
     }
 
-    fun storeEndpoint(endpoint: String, _auth: String, _p256dh: String) {
+    fun storeEndpoint(
+        endpoint: String,
+        _auth: String,
+        _p256dh: String,
+    ) {
         store.endpoint = endpoint
         // auth and p256dh are already store
         // if it was a real application server, they would have been registered by now

@@ -20,7 +20,6 @@ import org.unifiedpush.example.activities.CheckActivity.Companion.goToCheckActiv
 import org.unifiedpush.example.utils.registerOnRegistrationUpdate
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var store: Store
     private var internalReceiver: BroadcastReceiver? = null
 
@@ -33,10 +32,10 @@ class MainActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { /*granted ->*/
+                ActivityResultContracts.RequestPermission(),
+            ) { // granted ->
             }.launch(
-                Manifest.permission.POST_NOTIFICATIONS
+                Manifest.permission.POST_NOTIFICATIONS,
             )
         }
 
@@ -56,12 +55,13 @@ class MainActivity : AppCompatActivity() {
             goToCheckActivity(this)
             finish()
         } else {
-            internalReceiver = registerOnRegistrationUpdate {
-                if (store.endpoint != null) {
-                    goToCheckActivity(this)
-                    finish()
+            internalReceiver =
+                registerOnRegistrationUpdate {
+                    if (store.endpoint != null) {
+                        goToCheckActivity(this)
+                        finish()
+                    }
                 }
-            }
         }
     }
 
@@ -76,18 +76,21 @@ class MainActivity : AppCompatActivity() {
         // Keep the overlay menu open after an item is selected
         when (item.itemId) {
             R.id.action_feature_byte_message,
-            R.id.action_webpush -> {
+            R.id.action_webpush,
+            -> {
                 item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
                 item.actionView = View(this)
-                item.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-                    override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                        return false
-                    }
+                item.setOnActionExpandListener(
+                    object : MenuItem.OnActionExpandListener {
+                        override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                            return false
+                        }
 
-                    override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                        return false
-                    }
-                })
+                        override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                            return false
+                        }
+                    },
+                )
                 return false
             }
             else -> {
@@ -131,10 +134,11 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         fun goToMainActivity(context: Context) {
-            val intent = Intent(
-                context,
-                MainActivity::class.java
-            )
+            val intent =
+                Intent(
+                    context,
+                    MainActivity::class.java,
+                )
             context.startActivity(intent)
         }
     }

@@ -22,7 +22,6 @@ import org.unifiedpush.example.utils.updateRegistrationInfo
 import java.security.interfaces.ECPublicKey
 
 class CheckActivity : Activity() {
-
     private var internalReceiver: BroadcastReceiver? = null
     private lateinit var store: Store
 
@@ -59,9 +58,10 @@ class CheckActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        internalReceiver = registerOnRegistrationUpdate {
-            setEndpointOrGoToMain()
-        }
+        internalReceiver =
+            registerOnRegistrationUpdate {
+                setEndpointOrGoToMain()
+            }
         setEndpointOrGoToMain()
     }
 
@@ -95,7 +95,7 @@ class CheckActivity : Activity() {
         if (store.featureByteMessage) {
             UnifiedPush.registerAppWithDialog(
                 this,
-                features = arrayListOf(UnifiedPush.FEATURE_BYTES_MESSAGE)
+                features = arrayListOf(UnifiedPush.FEATURE_BYTES_MESSAGE),
             )
         } else {
             UnifiedPush.registerAppWithDialog(this)
@@ -105,10 +105,11 @@ class CheckActivity : Activity() {
 
     companion object {
         fun goToCheckActivity(context: Context) {
-            val intent = Intent(
-                context,
-                CheckActivity::class.java
-            )
+            val intent =
+                Intent(
+                    context,
+                    CheckActivity::class.java,
+                )
             context.startActivity(intent)
         }
     }

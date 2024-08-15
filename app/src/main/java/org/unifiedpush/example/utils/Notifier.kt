@@ -19,12 +19,17 @@ class Notifier(var context: Context) {
         gNM = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
 
-    fun showNotification(title: String, text: String, priority: Int) {
-        val notificationBuilder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification.Builder(context, channelId)
-        } else {
-            Notification.Builder(context)
-        }
+    fun showNotification(
+        title: String,
+        text: String,
+        priority: Int,
+    ) {
+        val notificationBuilder =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Notification.Builder(context, channelId)
+            } else {
+                Notification.Builder(context)
+            }
 
         val notification =
             notificationBuilder.setSmallIcon(R.drawable.ic_launcher_notification) // the status icon
@@ -35,11 +40,12 @@ class Notifier(var context: Context) {
                 .setPriority(priority)
                 .build()
 
-        val notificationId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ThreadLocalRandom.current().nextInt()
-        } else {
-            13737
-        }
+        val notificationId =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ThreadLocalRandom.current().nextInt()
+            } else {
+                13737
+            }
         gNM!!.notify(notificationId, notification)
     }
 
@@ -50,9 +56,10 @@ class Notifier(var context: Context) {
             val name = context.packageName
             val descriptionText = "UP-Example"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(channelId, name, importance).apply {
-                description = descriptionText
-            }
+            val channel =
+                NotificationChannel(channelId, name, importance).apply {
+                    description = descriptionText
+                }
             // Register the channel with the system
             val notificationManager: NotificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

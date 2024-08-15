@@ -15,7 +15,6 @@ private const val PREF_PRIVKEY = "org.unifiedpush.example::store::privkey"
 private const val PREF_AUTHKEY = "org.unifiedpush.example::store::authkey"
 
 class Store(val context: Context) {
-
     private val prefs = context.getSharedPreferences(PREF_MASTER, Context.MODE_PRIVATE)
 
     var endpoint: String?
@@ -48,8 +47,8 @@ class Store(val context: Context) {
                 WebPush.decodeKeyPair(
                     SerializedKeyPair(
                         privateKey,
-                        publicKey
-                    )
+                        publicKey,
+                    ),
                 )
             }
         }
@@ -64,12 +63,13 @@ class Store(val context: Context) {
         get() = prefs.getString(PREF_PUBKEY, null)?.let { WebPush.serializePublicKey(WebPush.decodePubKey(it)) }
 
     var authSecret: ByteArray
-        get() = prefs.getString(PREF_AUTHKEY, null)?.let {
-            WebPush.b64decode(it)
-        }
-            ?: WebPush.generateAuthSecret().apply {
-                authSecret = this
+        get() =
+            prefs.getString(PREF_AUTHKEY, null)?.let {
+                WebPush.b64decode(it)
             }
+                ?: WebPush.generateAuthSecret().apply {
+                    authSecret = this
+                }
         set(value) = prefs.edit().putString(PREF_AUTHKEY, WebPush.b64encode(value)).apply()
 
     val b64authSecret: String?
