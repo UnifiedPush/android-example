@@ -1,6 +1,6 @@
 # UnifiedPush Example
 
-This application is a generic application to handle notifications using UnifiedPush which can be used to test your setup. It is an example how to use [the UnifiedPush library](https://github.com/UnifiedPush/android-connector).
+This application is a generic application to handle notifications using UnifiedPush which can be used to test your setup. It is an example how to use [the UnifiedPush library](https://codeberg.org/UnifiedPush/android-connector).
 
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
      alt="Get it on F-Droid"
