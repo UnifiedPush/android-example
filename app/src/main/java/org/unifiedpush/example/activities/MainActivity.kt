@@ -12,8 +12,10 @@ import android.view.View
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.UnifiedPush.FEATURE_BYTES_MESSAGE
-import org.unifiedpush.android.connector.UnifiedPush.registerAppWithDialog
+import org.unifiedpush.android.connector.ui.SelectDistributorDialogBuilder
+import org.unifiedpush.android.connector.ui.UnifiedPushFunctions
 import org.unifiedpush.example.R
 import org.unifiedpush.example.Store
 import org.unifiedpush.example.activities.CheckActivity.Companion.goToCheckActivity
@@ -41,11 +43,27 @@ class MainActivity : AppCompatActivity() {
 
         store = Store(this)
         findViewById<Button>(R.id.register_button).setOnClickListener {
+            val features = arrayListOf<String>()
             if (store.featureByteMessage) {
-                registerAppWithDialog(this, features = arrayListOf(FEATURE_BYTES_MESSAGE))
-            } else {
-                registerAppWithDialog(this, features = arrayListOf())
+                features.add(FEATURE_BYTES_MESSAGE)
             }
+            SelectDistributorDialogBuilder(
+                this,
+                listOf("default"),
+                object : UnifiedPushFunctions {
+                    override fun getAckDistributor(): String? =
+                        UnifiedPush.getAckDistributor(this@MainActivity)
+
+                    override fun getDistributors(): List<String> =
+                        UnifiedPush.getDistributors(this@MainActivity, features)
+
+                    override fun registerApp(instance: String) =
+                        UnifiedPush.registerApp(this@MainActivity, instance, features)
+
+                    override fun saveDistributor(distributor: String) =
+                        UnifiedPush.saveDistributor(this@MainActivity, distributor)
+                }
+            ).show()
         }
     }
 
