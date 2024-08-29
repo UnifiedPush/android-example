@@ -21,6 +21,22 @@ import org.unifiedpush.example.Store
 import org.unifiedpush.example.activities.CheckActivity.Companion.goToCheckActivity
 import org.unifiedpush.example.utils.registerOnRegistrationUpdate
 
+// This is an example to ignore noDistributorFound
+// To use it, uncomment and replace SelectDistributorDialogBuilder
+// with MySelectorBuilder
+// in the MainActivity
+/*
+class MySelectorBuilder(context: Context, instances: List<String>,
+               unifiedPushFunctions: UnifiedPushFunctions
+): SelectDistributorDialogBuilder(context,
+    instances, unifiedPushFunctions
+) {
+    override fun onNoDistributorFound() {
+        // DO NOTHING
+    }
+}
+*/
+
 class MainActivity : AppCompatActivity() {
     private lateinit var store: Store
     private var internalReceiver: BroadcastReceiver? = null
@@ -47,6 +63,7 @@ class MainActivity : AppCompatActivity() {
             if (store.featureByteMessage) {
                 features.add(FEATURE_BYTES_MESSAGE)
             }
+            //MySelectorBuilder(
             SelectDistributorDialogBuilder(
                 this,
                 listOf("default"),
