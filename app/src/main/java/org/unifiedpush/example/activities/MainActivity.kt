@@ -25,6 +25,7 @@ import org.unifiedpush.example.utils.registerOnRegistrationUpdate
 // To use it, uncomment and replace SelectDistributorDialogBuilder
 // with MySelectorBuilder
 // in the MainActivity
+
 /*
 class MySelectorBuilder(context: Context, instances: List<String>,
                unifiedPushFunctions: UnifiedPushFunctions
@@ -63,23 +64,19 @@ class MainActivity : AppCompatActivity() {
             if (store.featureByteMessage) {
                 features.add(FEATURE_BYTES_MESSAGE)
             }
-            //MySelectorBuilder(
+            // MySelectorBuilder(
             SelectDistributorDialogBuilder(
                 this,
                 listOf("default"),
                 object : UnifiedPushFunctions {
-                    override fun getAckDistributor(): String? =
-                        UnifiedPush.getAckDistributor(this@MainActivity)
+                    override fun getAckDistributor(): String? = UnifiedPush.getAckDistributor(this@MainActivity)
 
-                    override fun getDistributors(): List<String> =
-                        UnifiedPush.getDistributors(this@MainActivity, features)
+                    override fun getDistributors(): List<String> = UnifiedPush.getDistributors(this@MainActivity, features)
 
-                    override fun registerApp(instance: String) =
-                        UnifiedPush.registerApp(this@MainActivity, instance, features)
+                    override fun registerApp(instance: String) = UnifiedPush.registerApp(this@MainActivity, instance, features)
 
-                    override fun saveDistributor(distributor: String) =
-                        UnifiedPush.saveDistributor(this@MainActivity, distributor)
-                }
+                    override fun saveDistributor(distributor: String) = UnifiedPush.saveDistributor(this@MainActivity, distributor)
+                },
             ).show()
         }
     }
