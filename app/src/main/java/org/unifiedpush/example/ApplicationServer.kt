@@ -84,6 +84,8 @@ class ApplicationServer(val context: Context) {
                 override fun getHeaders(): Map<String, String> {
                     val params: MutableMap<String, String> = HashMap()
                     params["Content-Encoding"] = "aes128gcm"
+                    params["TTL"] = "0"
+                    params["Urgency"] = "high"
                     return params
                 }
             }
