@@ -1,6 +1,7 @@
 package org.unifiedpush.example
 
 import android.content.Context
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import com.android.volley.RequestQueue
@@ -8,8 +9,11 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.crypto.tink.apps.webpush.WebPushHybridEncrypt
+import com.google.crypto.tink.subtle.EllipticCurves
 import org.unifiedpush.example.utils.TAG
+import java.security.KeyFactory
 import java.security.interfaces.ECPublicKey
+import java.security.spec.ECPublicKeySpec
 
 /**
  * This class emulates an application server
@@ -18,13 +22,15 @@ class ApplicationServer(val context: Context) {
     private val store = Store(context)
 
     fun sendNotification(callback: (error: String?) -> Unit) {
-        if (store.webpush) {
-            sendWebPushNotification(callback)
-        } else {
-            sendPlainTextNotification(callback)
-        }
+        sendWebPushNotification(callback)
     }
 
+    /**
+     * @hide
+     * Send plain text notifications.
+     *
+     * Will be used in dev mode.
+     */
     private fun sendPlainTextNotification(callback: (error: String?) -> Unit) {
         val requestQueue: RequestQueue = Volley.newRequestQueue(context)
         val url = Store(context).endpoint
@@ -54,6 +60,9 @@ class ApplicationServer(val context: Context) {
         requestQueue.add(stringRequest)
     }
 
+    /**
+     * Send a notification encrypted with RFC8291
+     */
     private fun sendWebPushNotification(callback: (error: String?) -> Unit) {
         val requestQueue: RequestQueue = Volley.newRequestQueue(context)
         val url = Store(context).endpoint
@@ -75,8 +84,8 @@ class ApplicationServer(val context: Context) {
                 override fun getBody(): ByteArray {
                     val hybridEncrypt =
                         WebPushHybridEncrypt.Builder()
-                            .withAuthSecret(store.authSecret)
-                            .withRecipientPublicKey(store.keyPair.public as ECPublicKey)
+                            .withAuthSecret(store.b64authSecret?.b64decode())
+                            .withRecipientPublicKey(store.serializedPubKey?.decodePubKey() as ECPublicKey)
                             .build()
                     return hybridEncrypt.encrypt("WebPush test".toByteArray(), null)
                 }
@@ -97,13 +106,26 @@ class ApplicationServer(val context: Context) {
         store.endpoint = endpoint
     }
 
-    fun storeEndpoint(
-        endpoint: String,
-        _auth: String,
-        _p256dh: String,
+    fun storeWebPushKeys(
+        auth: String,
+        p256dh: String,
     ) {
-        store.endpoint = endpoint
-        // auth and p256dh are already store
-        // if it was a real application server, they would have been registered by now
+        store.b64authSecret = auth
+        store.serializedPubKey = p256dh
     }
+}
+
+fun String.decodePubKey(): ECPublicKey {
+    val point = EllipticCurves.pointDecode(
+        EllipticCurves.CurveType.NIST_P256,
+        EllipticCurves.PointFormatType.UNCOMPRESSED, this.b64decode())
+    val spec = EllipticCurves.getCurveSpec(EllipticCurves.CurveType.NIST_P256)
+    return KeyFactory.getInstance("EC").generatePublic(ECPublicKeySpec(point, spec)) as ECPublicKey
+}
+
+fun String.b64decode(): ByteArray {
+    return Base64.decode(
+        this,
+        Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING,
+    )
 }

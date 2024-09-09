@@ -9,17 +9,16 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.view.isGone
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.example.ApplicationServer
 import org.unifiedpush.example.R
 import org.unifiedpush.example.Store
 import org.unifiedpush.example.activities.MainActivity.Companion.goToMainActivity
+import org.unifiedpush.example.utils.RegistrationDialogs
 import org.unifiedpush.example.utils.TAG
-import org.unifiedpush.example.utils.WebPush
 import org.unifiedpush.example.utils.registerOnRegistrationUpdate
 import org.unifiedpush.example.utils.updateRegistrationInfo
-import java.security.interfaces.ECPublicKey
+
 
 class CheckActivity : Activity() {
     private var internalReceiver: BroadcastReceiver? = null
@@ -39,17 +38,11 @@ class CheckActivity : Activity() {
         }
         findViewById<Button>(R.id.button_reregister).setOnClickListener { reRegister() }
 
-        (!store.webpush).let { webpush ->
-            findViewById<TextView>(R.id.text_auth).isGone = webpush
-            findViewById<TextView>(R.id.text_p256dh).isGone = webpush
-            findViewById<TextView>(R.id.text_auth_value).apply {
-                isGone = webpush
-                text = WebPush.b64encode(store.authSecret)
-            }
-            findViewById<TextView>(R.id.text_p256dh_value).apply {
-                isGone = webpush
-                text = WebPush.serializePublicKey(store.keyPair.public as ECPublicKey)
-            }
+        findViewById<TextView>(R.id.text_auth_value).apply {
+            text = store.b64authSecret
+        }
+        findViewById<TextView>(R.id.text_p256dh_value).apply {
+            text = store.serializedPubKey
         }
         Log.d(TAG, "endpoint ${store.endpoint}")
         Log.d(TAG, "auth: ${WebPush.b64encode(store.authSecret)}")
@@ -73,13 +66,16 @@ class CheckActivity : Activity() {
     }
 
     private fun setEndpointOrGoToMain() {
-        if (store.endpoint == null) {
+        store.endpoint?.let {
+            findViewById<TextView>(R.id.text_endpoint_value).apply {
+                text = it
+            }
+            Log.d(TAG, "endpoint $it")
+            Log.d(TAG, "auth: ${store.b64authSecret}")
+            Log.d(TAG, "p256dh: ${store.serializedPubKey}")
+        } ?: run {
             goToMainActivity(this)
             finish()
-        } else {
-            findViewById<TextView>(R.id.text_endpoint_value).apply {
-                text = store.endpoint ?: ""
-            }
         }
     }
 
@@ -92,14 +88,7 @@ class CheckActivity : Activity() {
     }
 
     private fun reRegister() {
-        if (store.featureByteMessage) {
-            UnifiedPush.registerAppWithDialog(
-                this,
-                features = arrayListOf(UnifiedPush.FEATURE_BYTES_MESSAGE),
-            )
-        } else {
-            UnifiedPush.registerAppWithDialog(this)
-        }
+        RegistrationDialogs(this, mayUseCurrent = true, mayUseDefault = true).run()
         Toast.makeText(applicationContext, "Registration sent.", Toast.LENGTH_SHORT).show()
     }
 

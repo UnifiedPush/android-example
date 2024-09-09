@@ -12,31 +12,11 @@ import android.view.View
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import org.unifiedpush.android.connector.UnifiedPush
-import org.unifiedpush.android.connector.UnifiedPush.FEATURE_BYTES_MESSAGE
-import org.unifiedpush.android.connector.ui.SelectDistributorDialogBuilder
-import org.unifiedpush.android.connector.ui.UnifiedPushFunctions
 import org.unifiedpush.example.R
 import org.unifiedpush.example.Store
 import org.unifiedpush.example.activities.CheckActivity.Companion.goToCheckActivity
+import org.unifiedpush.example.utils.RegistrationDialogs
 import org.unifiedpush.example.utils.registerOnRegistrationUpdate
-
-// This is an example to ignore noDistributorFound
-// To use it, uncomment and replace SelectDistributorDialogBuilder
-// with MySelectorBuilder
-// in the MainActivity
-
-/*
-class MySelectorBuilder(context: Context, instances: List<String>,
-               unifiedPushFunctions: UnifiedPushFunctions
-): SelectDistributorDialogBuilder(context,
-    instances, unifiedPushFunctions
-) {
-    override fun onNoDistributorFound() {
-        // DO NOTHING
-    }
-}
-*/
 
 class MainActivity : AppCompatActivity() {
     private lateinit var store: Store
@@ -60,24 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         store = Store(this)
         findViewById<Button>(R.id.register_button).setOnClickListener {
-            val features = arrayListOf<String>()
-            if (store.featureByteMessage) {
-                features.add(FEATURE_BYTES_MESSAGE)
-            }
-            // MySelectorBuilder(
-            SelectDistributorDialogBuilder(
-                this,
-                listOf("default"),
-                object : UnifiedPushFunctions {
-                    override fun getAckDistributor(): String? = UnifiedPush.getAckDistributor(this@MainActivity)
-
-                    override fun getDistributors(): List<String> = UnifiedPush.getDistributors(this@MainActivity, features)
-
-                    override fun registerApp(instance: String) = UnifiedPush.registerApp(this@MainActivity, instance, features)
-
-                    override fun saveDistributor(distributor: String) = UnifiedPush.saveDistributor(this@MainActivity, distributor)
-                },
-            ).show()
+            RegistrationDialogs(this, mayUseCurrent = true, mayUseDefault = true).run()
         }
     }
 
