@@ -1,6 +1,5 @@
 package org.unifiedpush.example.activities
 
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -12,7 +11,6 @@ import android.widget.Toast
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.example.ApplicationServer
 import org.unifiedpush.example.R
-import org.unifiedpush.example.Store
 import org.unifiedpush.example.activities.MainActivity.Companion.goToMainActivity
 import org.unifiedpush.example.utils.RegistrationDialogs
 import org.unifiedpush.example.utils.TAG
@@ -20,15 +18,12 @@ import org.unifiedpush.example.utils.registerOnRegistrationUpdate
 import org.unifiedpush.example.utils.updateRegistrationInfo
 
 
-class CheckActivity : Activity() {
+class CheckActivity : WithOverlayActivity() {
     private var internalReceiver: BroadcastReceiver? = null
-    private lateinit var store: Store
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_check)
-
-        store = Store(this)
+        super.onCreate(savedInstanceState)
 
         findViewById<Button>(R.id.button_unregister).setOnClickListener { unregister() }
         findViewById<Button>(R.id.button_notify).setOnClickListener {
@@ -44,9 +39,6 @@ class CheckActivity : Activity() {
         findViewById<TextView>(R.id.text_p256dh_value).apply {
             text = store.serializedPubKey
         }
-        Log.d(TAG, "endpoint ${store.endpoint}")
-        Log.d(TAG, "auth: ${WebPush.b64encode(store.authSecret)}")
-        Log.d(TAG, "p256dh: ${WebPush.serializePublicKey(store.keyPair.public as ECPublicKey)}")
     }
 
     override fun onResume() {
