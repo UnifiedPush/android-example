@@ -12,6 +12,7 @@ import androidx.core.view.isGone
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.example.ApplicationServer
 import org.unifiedpush.example.R
+import org.unifiedpush.example.TestService
 import org.unifiedpush.example.activities.MainActivity.Companion.goToMainActivity
 import org.unifiedpush.example.utils.RegistrationDialogs
 import org.unifiedpush.example.utils.TAG
@@ -43,6 +44,9 @@ class CheckActivity : WithOverlayActivity() {
         findViewById<Button>(R.id.button_reregister).setOnClickListener {
             reRegister()
         }
+        findViewById<Button>(R.id.button_start_service).setOnClickListener {
+            TestService.stop(this)
+        }
         setDevButtonsVisibility()
     }
 
@@ -53,10 +57,12 @@ class CheckActivity : WithOverlayActivity() {
         val gone = !store.devMode
         val devButtons = listOf(
             R.id.button_reregister,
+            R.id.button_start_service,
         )
         devButtons.forEach {
             findViewById<Button>(it).isGone = gone
         }
+        findViewById<Button>(R.id.button_start_service).isEnabled = TestService.isStarted()
     }
 
     override fun onResume() {

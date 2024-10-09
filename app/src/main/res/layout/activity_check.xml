@@ -139,6 +139,18 @@
         app:layout_constraintTop_toBottomOf="@+id/button_unregister"
         android:layout_marginLeft="16dp" />
 
+    <Button
+        android:id="@+id/button_start_service"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="16dp"
+        android:text="Stop Foreground Service"
+        app:layout_constraintEnd_toEndOf="@+id/button_notify"
+        app:layout_constraintStart_toStartOf="@+id/button_notify"
+        app:layout_constraintTop_toBottomOf="@+id/button_notify"
+        android:layout_marginLeft="16dp" />
+
     <TextView
         android:id="@+id/error_text"
         android:layout_width="0dp"

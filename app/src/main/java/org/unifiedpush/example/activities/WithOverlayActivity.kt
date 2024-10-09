@@ -1,5 +1,6 @@
 package org.unifiedpush.example.activities
 
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -46,6 +47,11 @@ open class WithOverlayActivity: AppCompatActivity()  {
                 this@WithOverlayActivity.updateRegistrationInfo()
                 false
             }
+            findItem(R.id.action_start_foreground_on_message)?.setOnMenuItemClickListener {
+                store.devStartForeground = !store.devStartForeground
+                setMenuItemVisibility(menu)
+                false
+            }
             setMenuItemVisibility(this)
         }
         return super.onCreateOptionsMenu(menu)
@@ -54,5 +60,9 @@ open class WithOverlayActivity: AppCompatActivity()  {
     private fun setMenuItemVisibility(menu: Menu) {
         val devMode = store.devMode
         menu.findItem(R.id.action_dev_mode)?.isChecked = devMode
+        menu.findItem(R.id.action_start_foreground_on_message)?.apply {
+            isVisible = devMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+            isChecked = store.devStartForeground
+        }
     }
 }

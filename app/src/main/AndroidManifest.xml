@@ -37,6 +37,14 @@
                 <action android:name="org.unifiedpush.android.connector.REGISTRATION_FAILED"/>
             </intent-filter>
         </receiver>
+        <service
+            android:name=".TestService"
+            android:enabled="true"
+            android:foregroundServiceType="specialUse">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="This is a test service that do nothing."/>
+        </service>
+
     </application>
 
 </manifest>

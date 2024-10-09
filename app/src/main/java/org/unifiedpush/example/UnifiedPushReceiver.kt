@@ -2,6 +2,7 @@ package org.unifiedpush.example
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import org.unifiedpush.android.connector.FailedReason
@@ -25,6 +26,14 @@ class UnifiedPushReceiver : MessagingReceiver() {
         val priority = params["priority"]?.toInt() ?: 8
         val title = params["title"] ?: context.getString(R.string.app_name)
         Notifier(context).showNotification(title, text, priority)
+
+        // For developer mode only
+        val store = Store(context)
+        if (store.devMode) {
+            if (store.devStartForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                TestService.startForeground(context)
+            }
+        }
     }
 
     override fun onNewEndpoint(
