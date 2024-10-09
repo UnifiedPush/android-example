@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isGone
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.example.ApplicationServer
 import org.unifiedpush.example.R
@@ -31,8 +32,30 @@ class CheckActivity : WithOverlayActivity() {
                 findViewById<TextView>(R.id.error_text).text = error ?: ""
             }
         }
-        findViewById<Button>(R.id.button_reregister).setOnClickListener { reRegister() }
 
+        setDevButtons()
+    }
+
+    /**
+     * Set buttons for developer mode.
+     */
+    private fun setDevButtons() {
+        findViewById<Button>(R.id.button_reregister).setOnClickListener {
+            reRegister()
+        }
+        setDevButtonsVisibility()
+    }
+
+    /**
+     * Set visibility of dev buttons.
+     */
+    private fun setDevButtonsVisibility() {
+        val gone = !store.devMode
+        val devButtons = listOf(
+            R.id.button_reregister,
+        )
+        devButtons.forEach {
+            findViewById<Button>(it).isGone = gone
         }
     }
 
@@ -41,6 +64,7 @@ class CheckActivity : WithOverlayActivity() {
         internalReceiver =
             registerOnRegistrationUpdate {
                 setEndpointOrGoToMain()
+                setDevButtonsVisibility()
             }
         setEndpointOrGoToMain()
     }

@@ -7,6 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import org.unifiedpush.example.R
 import org.unifiedpush.example.Store
+import org.unifiedpush.example.utils.updateRegistrationInfo
 
 open class WithOverlayActivity: AppCompatActivity()  {
     lateinit var store: Store
@@ -38,15 +39,20 @@ open class WithOverlayActivity: AppCompatActivity()  {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.overlay_main, menu)
-        menu?.findItem(R.id.action_dev_mode)?.apply {
-            isChecked = store.devMode
-            setOnMenuItemClickListener {
-                val newState = !store.devMode
-                store.devMode = newState
-                it.isChecked = newState
+        menu?.apply {
+            findItem(R.id.action_dev_mode)?.setOnMenuItemClickListener {
+                store.devMode = !store.devMode
+                setMenuItemVisibility(menu)
+                this@WithOverlayActivity.updateRegistrationInfo()
                 false
             }
+            setMenuItemVisibility(this)
         }
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun setMenuItemVisibility(menu: Menu) {
+        val devMode = store.devMode
+        menu.findItem(R.id.action_dev_mode)?.isChecked = devMode
     }
 }
