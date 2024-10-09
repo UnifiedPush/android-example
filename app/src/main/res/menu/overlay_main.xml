@@ -6,6 +6,10 @@
         app:showAsAction="never"
         android:title="Developer mode"
         android:checkable="true" />
+    <item android:id="@+id/action_force_encrypted"
+        app:showAsAction="never"
+        android:title="Force encrypted messages"
+        android:checkable="true" />
     <item android:id="@+id/action_start_foreground_on_message"
         app:showAsAction="never"
         android:title="Foreground service on message"

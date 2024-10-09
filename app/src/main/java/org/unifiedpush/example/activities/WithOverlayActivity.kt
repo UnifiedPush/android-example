@@ -47,6 +47,11 @@ open class WithOverlayActivity: AppCompatActivity()  {
                 this@WithOverlayActivity.updateRegistrationInfo()
                 false
             }
+            findItem(R.id.action_force_encrypted)?.setOnMenuItemClickListener {
+                store.devForceEncrypted = !store.devForceEncrypted
+                setMenuItemVisibility(menu)
+                false
+            }
             findItem(R.id.action_start_foreground_on_message)?.setOnMenuItemClickListener {
                 store.devStartForeground = !store.devStartForeground
                 setMenuItemVisibility(menu)
@@ -60,6 +65,10 @@ open class WithOverlayActivity: AppCompatActivity()  {
     private fun setMenuItemVisibility(menu: Menu) {
         val devMode = store.devMode
         menu.findItem(R.id.action_dev_mode)?.isChecked = devMode
+        menu.findItem(R.id.action_force_encrypted)?.apply {
+            isVisible = devMode
+            isChecked = store.devForceEncrypted
+        }
         menu.findItem(R.id.action_start_foreground_on_message)?.apply {
             isVisible = devMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
             isChecked = store.devStartForeground

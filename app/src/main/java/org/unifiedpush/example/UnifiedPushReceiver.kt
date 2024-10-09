@@ -21,19 +21,33 @@ class UnifiedPushReceiver : MessagingReceiver() {
         message: PushMessage,
         instance: String,
     ) {
-        val params = decodeMessage(message.content.toString(Charsets.UTF_8))
-        val text = params["message"] ?: "Internal error"
-        val priority = params["priority"]?.toInt() ?: 8
-        val title = params["title"] ?: context.getString(R.string.app_name)
-        Notifier(context).showNotification(title, text, priority)
-
-        // For developer mode only
         val store = Store(context)
-        if (store.devMode) {
+        if (!store.devMode){
+            val params = decodeMessage(message.content.toString(Charsets.UTF_8))
+            notify(context, params)
+        } else {
+            // For developer mode only
+            val params = if (store.devForceEncrypted && !message.decrypted) {
+                mapOf(
+                    "title" to "Error",
+                    "message" to "Couldn't decrypt message.",
+                    "priority" to "8",
+                )
+            } else {
+                decodeMessage(message.content.toString(Charsets.UTF_8))
+            }
+            notify(context, params)
             if (store.devStartForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 TestService.startForeground(context)
             }
         }
+    }
+
+    private fun notify(context: Context, params: Map<String, String>) {
+        val text = params["message"] ?: "Internal error"
+        val priority = params["priority"]?.toInt() ?: 8
+        val title = params["title"] ?: context.getString(R.string.app_name)
+        Notifier(context).showNotification(title, text, priority)
     }
 
     override fun onNewEndpoint(
