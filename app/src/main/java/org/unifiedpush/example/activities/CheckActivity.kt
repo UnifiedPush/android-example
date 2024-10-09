@@ -33,11 +33,6 @@ class CheckActivity : WithOverlayActivity() {
         }
         findViewById<Button>(R.id.button_reregister).setOnClickListener { reRegister() }
 
-        findViewById<TextView>(R.id.text_auth_value).apply {
-            text = store.b64authSecret
-        }
-        findViewById<TextView>(R.id.text_p256dh_value).apply {
-            text = store.serializedPubKey
         }
     }
 
@@ -60,11 +55,20 @@ class CheckActivity : WithOverlayActivity() {
     private fun setEndpointOrGoToMain() {
         store.endpoint?.let {
             findViewById<TextView>(R.id.text_endpoint_value).apply {
-                text = it
+                text = it.also {
+                    Log.d(TAG, "endpoint $it")
+                }
             }
-            Log.d(TAG, "endpoint $it")
-            Log.d(TAG, "auth: ${store.b64authSecret}")
-            Log.d(TAG, "p256dh: ${store.serializedPubKey}")
+            findViewById<TextView>(R.id.text_auth_value).apply {
+                text = store.b64authSecret.also {
+                    Log.d(TAG, "auth: $it")
+                }
+            }
+            findViewById<TextView>(R.id.text_p256dh_value).apply {
+                text = store.serializedPubKey.also {
+                    Log.d(TAG, "p256dh: $it")
+                }
+            }
         } ?: run {
             goToMainActivity(this)
             finish()
