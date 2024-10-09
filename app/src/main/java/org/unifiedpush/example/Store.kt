@@ -4,12 +4,21 @@ import android.content.Context
 import org.unifiedpush.android.connector.UnifiedPush
 
 private const val PREF_MASTER = "org.unifiedpush.example::store"
+private const val PREF_DEV_MODE = "org.unifiedpush.example::store::devMode"
 private const val PREF_ENDPOINT = "org.unifiedpush.example::store::endpoint"
 private const val PREF_PUBKEY = "org.unifiedpush.example::store::pubkey"
 private const val PREF_AUTHKEY = "org.unifiedpush.example::store::authkey"
 
 class Store(val context: Context) {
     private val prefs = context.getSharedPreferences(PREF_MASTER, Context.MODE_PRIVATE)
+
+
+    /**
+     * Is Developer mode enabled.
+     */
+    var devMode: Boolean
+        get() = prefs.getBoolean(PREF_DEV_MODE, false)
+        set(value) = prefs.edit().putBoolean(PREF_DEV_MODE, value).apply()
 
     var endpoint: String?
         get() = UnifiedPush.getAckDistributor(context)?.let { prefs.getString(PREF_ENDPOINT, null) }

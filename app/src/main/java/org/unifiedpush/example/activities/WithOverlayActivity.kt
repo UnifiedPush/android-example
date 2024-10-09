@@ -38,34 +38,15 @@ open class WithOverlayActivity: AppCompatActivity()  {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.overlay_main, menu)
-        /*menu?.findItem(R.id.action_feature_byte_message)?.apply {
-            isChecked = store.featureByteMessage
-            isEnabled = !store.webpush
+        menu?.findItem(R.id.action_dev_mode)?.apply {
+            isChecked = store.devMode
             setOnMenuItemClickListener {
-                val check = !it.isChecked
-                it.isChecked = check
-                store.featureByteMessage = check
+                val newState = !store.devMode
+                store.devMode = newState
+                it.isChecked = newState
                 false
             }
         }
-        menu?.findItem(R.id.action_webpush)?.apply {
-            isChecked = store.webpush
-            setOnMenuItemClickListener {
-                val check = !it.isChecked
-                it.isChecked = check
-                menu.findItem(R.id.action_feature_byte_message)?.apply {
-                    isChecked = check
-                    isEnabled = !check
-                }
-                store.webpush = check
-                store.featureByteMessage = check
-                // gen authSecret and keyPair
-                store.authSecret
-                store.keyPair
-                false
-            }
-        }*/
-
         return super.onCreateOptionsMenu(menu)
     }
 }
