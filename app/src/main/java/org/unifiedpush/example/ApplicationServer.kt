@@ -12,6 +12,7 @@ import com.google.crypto.tink.apps.webpush.WebPushHybridEncrypt
 import com.google.crypto.tink.subtle.EllipticCurves
 import org.unifiedpush.example.utils.TAG
 import java.security.KeyFactory
+import java.security.SecureRandom
 import java.security.interfaces.ECPublicKey
 import java.security.spec.ECPublicKeySpec
 
@@ -24,6 +25,8 @@ class ApplicationServer(val context: Context) {
     fun sendNotification(callback: (error: String?) -> Unit) {
         if (store.devMode && store.devCleartextTest) {
             sendPlainTextNotification(callback)
+        } else if (store.devMode && store.devWrongKeysTest) {
+            sendWebPushNotification(fakeKeys = true, callback)
         } else {
             sendWebPushNotification(callback)
         }
@@ -68,6 +71,10 @@ class ApplicationServer(val context: Context) {
      * Send a notification encrypted with RFC8291
      */
     private fun sendWebPushNotification(callback: (error: String?) -> Unit) {
+        sendWebPushNotification(fakeKeys = false, callback)
+    }
+
+    private fun sendWebPushNotification(fakeKeys: Boolean, callback: (error: String?) -> Unit) {
         val requestQueue: RequestQueue = Volley.newRequestQueue(context)
         val url = Store(context).endpoint
         val stringRequest: StringRequest =
@@ -86,9 +93,10 @@ class ApplicationServer(val context: Context) {
                     },
                 ) {
                 override fun getBody(): ByteArray {
+                    val auth = if (fakeKeys) { genAuth() } else { store.b64authSecret?.b64decode() }
                     val hybridEncrypt =
                         WebPushHybridEncrypt.Builder()
-                            .withAuthSecret(store.b64authSecret?.b64decode())
+                            .withAuthSecret(auth)
                             .withRecipientPublicKey(store.serializedPubKey?.decodePubKey() as ECPublicKey)
                             .build()
                     return hybridEncrypt.encrypt("WebPush test".toByteArray(), null)
@@ -103,6 +111,12 @@ class ApplicationServer(val context: Context) {
                 }
             }
         requestQueue.add(stringRequest)
+    }
+
+    private fun genAuth(): ByteArray {
+        return ByteArray(16).apply {
+            SecureRandom().nextBytes(this)
+        }
     }
 
     // The endpoint is "sent" to the application server
