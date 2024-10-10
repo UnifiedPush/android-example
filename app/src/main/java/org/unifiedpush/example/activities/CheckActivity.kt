@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isGone
+import org.unifiedpush.android.connector.LinkActivityHelper
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.example.ApplicationServer
 import org.unifiedpush.example.R
@@ -22,6 +23,7 @@ import org.unifiedpush.example.utils.updateRegistrationInfo
 
 class CheckActivity : WithOverlayActivity() {
     private var internalReceiver: BroadcastReceiver? = null
+    private val helper = LinkActivityHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_check)
@@ -47,6 +49,21 @@ class CheckActivity : WithOverlayActivity() {
         findViewById<Button>(R.id.button_start_service).setOnClickListener {
             TestService.stop(this)
         }
+        findViewById<Button>(R.id.button_test_deep_link).setOnClickListener {
+            /**
+             * We use the [LinkActivityHelper] with [onActivityResult], but we could
+             * also use [UnifiedPush.tryUseDefaultDistributor] directly:
+             *
+             * ```
+             * UnifiedPush.tryUseDefaultDistributor(this) { success ->
+             *      Log.d(TAG, "Distributor found=$success")
+             * }
+             * ```
+             */
+            if (!helper.startLinkActivityForResult()) {
+                Log.d(TAG, "No distributor found")
+            }
+        }
         setDevButtonsVisibility()
     }
 
@@ -58,11 +75,26 @@ class CheckActivity : WithOverlayActivity() {
         val devButtons = listOf(
             R.id.button_reregister,
             R.id.button_start_service,
+            R.id.button_test_deep_link,
         )
         devButtons.forEach {
             findViewById<Button>(it).isGone = gone
         }
         findViewById<Button>(R.id.button_start_service).isEnabled = TestService.isStarted()
+    }
+
+    /**
+     * Receive link activity result.
+     *
+     * If the link succeed, we register our app.
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val success = helper.onLinkActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "Distributor found=$success")
+        if (success) {
+            UnifiedPush.registerApp(this)
+        }
     }
 
     override fun onResume() {

@@ -151,6 +151,18 @@
         app:layout_constraintTop_toBottomOf="@+id/button_notify"
         android:layout_marginLeft="16dp" />
 
+    <Button
+        android:id="@+id/button_test_deep_link"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Deep link"
+        app:layout_constraintEnd_toEndOf="@+id/button_reregister"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_reregister"
+        android:layout_marginLeft="16dp" />
+
     <TextView
         android:id="@+id/error_text"
         android:layout_width="0dp"
