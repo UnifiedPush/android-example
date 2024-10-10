@@ -6,6 +6,7 @@ import org.unifiedpush.android.connector.UnifiedPush
 private const val PREF_MASTER = "org.unifiedpush.example::store"
 private const val PREF_DEV_MODE = "org.unifiedpush.example::store::devMode"
 private const val PREF_DEV_FOREGROUND_SERVICE = "org.unifiedpush.example::store::dev::foregroundService"
+private const val PREF_DEV_CLEARTEXT_TEST = "org.unifiedpush.example::store::dev::cleartextTest"
 private const val PREF_DEV_FORCE_ENCRYPTED = "org.unifiedpush.example::store::dev::forceEncrypted"
 private const val PREF_ENDPOINT = "org.unifiedpush.example::store::endpoint"
 private const val PREF_PUBKEY = "org.unifiedpush.example::store::pubkey"
@@ -25,6 +26,10 @@ class Store(val context: Context) {
     var devStartForeground: Boolean
         get() = prefs.getBoolean(PREF_DEV_FOREGROUND_SERVICE, false)
         set(value) = prefs.edit().putBoolean(PREF_DEV_FOREGROUND_SERVICE, value).apply()
+
+    var devCleartextTest: Boolean
+        get() = prefs.getBoolean(PREF_DEV_CLEARTEXT_TEST, false)
+        set(value) = prefs.edit().putBoolean(PREF_DEV_CLEARTEXT_TEST, value).apply()
 
     var devForceEncrypted: Boolean
         get() = prefs.getBoolean(PREF_DEV_FORCE_ENCRYPTED, false)

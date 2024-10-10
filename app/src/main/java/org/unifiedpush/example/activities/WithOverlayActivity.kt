@@ -52,6 +52,11 @@ open class WithOverlayActivity: AppCompatActivity()  {
                 setMenuItemVisibility(menu)
                 false
             }
+            findItem(R.id.action_cleartext_test)?.setOnMenuItemClickListener {
+                store.devCleartextTest = !store.devCleartextTest
+                setMenuItemVisibility(menu)
+                false
+            }
             findItem(R.id.action_start_foreground_on_message)?.setOnMenuItemClickListener {
                 store.devStartForeground = !store.devStartForeground
                 setMenuItemVisibility(menu)
@@ -68,6 +73,10 @@ open class WithOverlayActivity: AppCompatActivity()  {
         menu.findItem(R.id.action_force_encrypted)?.apply {
             isVisible = devMode
             isChecked = store.devForceEncrypted
+        }
+        menu.findItem(R.id.action_cleartext_test)?.apply {
+            isVisible = devMode
+            isChecked = store.devCleartextTest
         }
         menu.findItem(R.id.action_start_foreground_on_message)?.apply {
             isVisible = devMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O

@@ -22,7 +22,11 @@ class ApplicationServer(val context: Context) {
     private val store = Store(context)
 
     fun sendNotification(callback: (error: String?) -> Unit) {
-        sendWebPushNotification(callback)
+        if (store.devMode && store.devCleartextTest) {
+            sendPlainTextNotification(callback)
+        } else {
+            sendWebPushNotification(callback)
+        }
     }
 
     /**
@@ -52,7 +56,7 @@ class ApplicationServer(val context: Context) {
                 override fun getParams(): MutableMap<String, String> {
                     val params = mutableMapOf<String, String>()
                     params["title"] = "Test"
-                    params["message"] = "With UnifiedPush"
+                    params["message"] = "Send in cleartext."
                     params["priority"] = "5"
                     return params
                 }
