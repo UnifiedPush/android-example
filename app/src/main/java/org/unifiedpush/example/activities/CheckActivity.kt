@@ -64,6 +64,9 @@ class CheckActivity : WithOverlayActivity() {
                 Log.d(TAG, "No distributor found")
             }
         }
+        findViewById<Button>(R.id.button_change_distrib).setOnClickListener {
+            RegistrationDialogs(this, mayUseCurrent = false, mayUseDefault = false).run()
+        }
         setDevButtonsVisibility()
     }
 
@@ -76,6 +79,7 @@ class CheckActivity : WithOverlayActivity() {
             R.id.button_reregister,
             R.id.button_start_service,
             R.id.button_test_deep_link,
+            R.id.button_change_distrib,
         )
         devButtons.forEach {
             findViewById<Button>(it).isGone = gone
