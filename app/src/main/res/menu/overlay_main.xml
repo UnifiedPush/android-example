@@ -20,7 +20,7 @@
         android:checkable="true" />
     <item android:id="@+id/action_wrongkeys_test"
         app:showAsAction="never"
-        android:title="Send test with wrong keys"
+        android:title="Use wrong encryption keys"
         android:checkable="true" />
     <item android:id="@+id/action_start_foreground_on_message"
         app:showAsAction="never"
