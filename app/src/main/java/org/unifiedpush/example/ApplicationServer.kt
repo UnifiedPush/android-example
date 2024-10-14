@@ -120,7 +120,8 @@ class ApplicationServer(val context: Context) {
                     params["TTL"] = "0"
                     params["Urgency"] = "high"
                     if (vapidImplementedForSdk() &&
-                                        store.distributorRequiresVapid) {
+                        ((store.devMode && store.devUseVapid) ||
+                                        store.distributorRequiresVapid)) {
                         params["Authorization"] = getVapidHeader()
                     }
                     return params

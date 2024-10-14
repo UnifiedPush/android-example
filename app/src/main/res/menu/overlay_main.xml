@@ -10,6 +10,10 @@
         app:showAsAction="never"
         android:title="Force encrypted messages"
         android:checkable="true" />
+    <item android:id="@+id/action_use_vapid"
+        app:showAsAction="never"
+        android:title="Use VAPID"
+        android:checkable="true" />
     <item android:id="@+id/action_cleartext_test"
         app:showAsAction="never"
         android:title="Send cleartext test"

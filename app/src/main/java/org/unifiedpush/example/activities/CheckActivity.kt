@@ -150,9 +150,13 @@ class CheckActivity : WithOverlayActivity() {
             findViewById<TextView>(R.id.text_vapid_value).isGone = true
         } else {
             val distUseVapid = store.distributorRequiresVapid
-            findViewById<TextView>(R.id.text_vapid_required_by_distrib).isGone = !distUseVapid
+            val devUseVapid = store.devMode && store.devUseVapid
+            findViewById<TextView>(R.id.text_vapid_required_by_distrib).apply {
+                isGone = !distUseVapid && !devUseVapid
+                text = if (devUseVapid) "VAPID:" else "VAPID, required by the distributor:"
+            }
             findViewById<TextView>(R.id.text_vapid_value).apply {
-                isGone = !distUseVapid
+                isGone = !distUseVapid && !devUseVapid
                 text = ApplicationServer(context).getVapidHeader()
             }
         }
