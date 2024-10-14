@@ -19,6 +19,7 @@ import org.unifiedpush.example.utils.RegistrationDialogs
 import org.unifiedpush.example.utils.TAG
 import org.unifiedpush.example.utils.registerOnRegistrationUpdate
 import org.unifiedpush.example.utils.updateRegistrationInfo
+import org.unifiedpush.example.vapidImplementedForSdk
 
 
 class CheckActivity : WithOverlayActivity() {
@@ -106,6 +107,7 @@ class CheckActivity : WithOverlayActivity() {
         internalReceiver =
             registerOnRegistrationUpdate {
                 setEndpointOrGoToMain()
+                setVapid()
                 setDevButtonsVisibility()
             }
         setEndpointOrGoToMain()
@@ -135,9 +137,24 @@ class CheckActivity : WithOverlayActivity() {
                     Log.d(TAG, "p256dh: $it")
                 }
             }
+            setVapid()
         } ?: run {
             goToMainActivity(this)
             finish()
+        }
+    }
+
+    private fun setVapid() {
+        if (!vapidImplementedForSdk()) {
+            findViewById<TextView>(R.id.text_vapid_required_by_distrib).isGone = true
+            findViewById<TextView>(R.id.text_vapid_value).isGone = true
+        } else {
+            val distUseVapid = store.distributorRequiresVapid
+            findViewById<TextView>(R.id.text_vapid_required_by_distrib).isGone = !distUseVapid
+            findViewById<TextView>(R.id.text_vapid_value).apply {
+                isGone = !distUseVapid
+                text = ApplicationServer(context).getVapidHeader()
+            }
         }
     }
 

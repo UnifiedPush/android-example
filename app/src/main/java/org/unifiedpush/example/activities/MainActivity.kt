@@ -39,6 +39,8 @@ class MainActivity : WithOverlayActivity() {
             goToCheckActivity(this)
             finish()
         } else {
+            // We reset the value
+            store.distributorRequiresVapid = false
             internalReceiver =
                 registerOnRegistrationUpdate {
                     if (store.endpoint != null) {

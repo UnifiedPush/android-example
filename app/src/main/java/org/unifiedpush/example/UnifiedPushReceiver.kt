@@ -68,7 +68,19 @@ class UnifiedPushReceiver : MessagingReceiver() {
 
     override fun onRegistrationFailed(context: Context, reason: FailedReason, instance: String) {
         Toast.makeText(context, "Registration Failed: $reason", Toast.LENGTH_SHORT).show()
-        UnifiedPush.forceRemoveDistributor(context)
+        if (reason == FailedReason.VAPID_REQUIRED) {
+            if (vapidImplementedForSdk()) {
+                val store = Store(context)
+                store.distributorRequiresVapid = true
+                ApplicationServer(context).genVapidKey()
+                UnifiedPush.registerApp(context, instance, vapid = store.vapidPubKey)
+            } else {
+                Toast.makeText(context, "Distributor requires VAPID but it isn't implemented for old Android versions.", Toast.LENGTH_SHORT).show()
+                UnifiedPush.forceRemoveDistributor(context)
+            }
+        } else {
+            UnifiedPush.forceRemoveDistributor(context)
+        }
     }
 
     override fun onUnregistered(

@@ -12,6 +12,8 @@ private const val PREF_DEV_FORCE_ENCRYPTED = "org.unifiedpush.example::store::de
 private const val PREF_ENDPOINT = "org.unifiedpush.example::store::endpoint"
 private const val PREF_PUBKEY = "org.unifiedpush.example::store::pubkey"
 private const val PREF_AUTHKEY = "org.unifiedpush.example::store::authkey"
+private const val PREF_DISTRIB_REQ_VAPID = "org.unifiedpush.example::store::distribRequiresVapid"
+private const val PREF_VAPID_PUBKEY = "org.unifiedpush.example::store::vapidPubKey"
 
 class Store(val context: Context) {
     private val prefs = context.getSharedPreferences(PREF_MASTER, Context.MODE_PRIVATE)
@@ -57,6 +59,14 @@ class Store(val context: Context) {
     var serializedPubKey: String?
         get() = prefs.getString(PREF_PUBKEY, null)
         set(value) = prefs.edit().putString(PREF_PUBKEY, value).apply()
+
+    var distributorRequiresVapid: Boolean
+        get() = prefs.getBoolean(PREF_DISTRIB_REQ_VAPID, false)
+        set(value) = prefs.edit().putBoolean(PREF_DISTRIB_REQ_VAPID, value).apply()
+
+    var vapidPubKey: String?
+        get() = prefs.getString(PREF_VAPID_PUBKEY, null)
+        set(value) = prefs.edit().putString(PREF_VAPID_PUBKEY, value).apply()
 
     /**
      * Store the auth secret for the registration on the "server"
