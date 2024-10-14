@@ -68,6 +68,11 @@ open class WithOverlayActivity: AppCompatActivity()  {
                 setMenuItemVisibility(menu)
                 false
             }
+            findItem(R.id.action_wrong_vapid)?.setOnMenuItemClickListener {
+                store.devWrongVapidKeysTest = !store.devWrongVapidKeysTest
+                setMenuItemVisibility(menu)
+                false
+            }
             findItem(R.id.action_start_foreground_on_message)?.setOnMenuItemClickListener {
                 store.devStartForeground = !store.devStartForeground
                 setMenuItemVisibility(menu)
@@ -98,6 +103,12 @@ open class WithOverlayActivity: AppCompatActivity()  {
             isVisible = devMode
             isEnabled = !clearText
             isChecked = !clearText && store.devWrongKeysTest
+        }
+        menu.findItem(R.id.action_wrong_vapid)?.apply {
+            val useVapid = store.distributorRequiresVapid || store.devUseVapid
+            isVisible = devMode
+            isEnabled = useVapid
+            isChecked = useVapid && store.devWrongVapidKeysTest
         }
         menu.findItem(R.id.action_start_foreground_on_message)?.apply {
             isVisible = devMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O

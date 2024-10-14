@@ -18,6 +18,10 @@
         app:showAsAction="never"
         android:title="Send cleartext test"
         android:checkable="true" />
+    <item android:id="@+id/action_wrong_vapid"
+        app:showAsAction="never"
+        android:title="Use wrong VAPID keys"
+        android:checkable="true" />
     <item android:id="@+id/action_wrongkeys_test"
         app:showAsAction="never"
         android:title="Use wrong encryption keys"

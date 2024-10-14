@@ -8,6 +8,7 @@ private const val PREF_DEV_MODE = "org.unifiedpush.example::store::devMode"
 private const val PREF_DEV_FOREGROUND_SERVICE = "org.unifiedpush.example::store::dev::foregroundService"
 private const val PREF_DEV_CLEARTEXT_TEST = "org.unifiedpush.example::store::dev::cleartextTest"
 private const val PREF_DEV_WRONG_KEYS_TEST = "org.unifiedpush.example::store::dev::wrongKeysTest"
+private const val PREF_DEV_WRONG_VAPID_KEYS = "org.unifiedpush.example::store::dev::wrongVapidKeysTest"
 private const val PREF_DEV_FORCE_ENCRYPTED = "org.unifiedpush.example::store::dev::forceEncrypted"
 private const val PREF_DEV_USE_VAPID = "org.unifiedpush.example::store::dev::useVapid"
 private const val PREF_ENDPOINT = "org.unifiedpush.example::store::endpoint"
@@ -38,6 +39,10 @@ class Store(val context: Context) {
     var devWrongKeysTest: Boolean
         get() = prefs.getBoolean(PREF_DEV_WRONG_KEYS_TEST, false)
         set(value) = prefs.edit().putBoolean(PREF_DEV_WRONG_KEYS_TEST, value).apply()
+
+    var devWrongVapidKeysTest: Boolean
+        get() = prefs.getBoolean(PREF_DEV_WRONG_VAPID_KEYS, false)
+        set(value) = prefs.edit().putBoolean(PREF_DEV_WRONG_VAPID_KEYS, value).apply()
 
     var devForceEncrypted: Boolean
         get() = prefs.getBoolean(PREF_DEV_FORCE_ENCRYPTED, false)

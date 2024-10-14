@@ -122,7 +122,7 @@ class ApplicationServer(val context: Context) {
                     if (vapidImplementedForSdk() &&
                         ((store.devMode && store.devUseVapid) ||
                                         store.distributorRequiresVapid)) {
-                        params["Authorization"] = getVapidHeader()
+                        params["Authorization"] = getVapidHeader(fakeKeys = (store.devMode && store.devWrongVapidKeysTest))
                     }
                     return params
                 }
@@ -157,7 +157,7 @@ class ApplicationServer(val context: Context) {
      * @return [String] "vapid t=$JWT,k=$PUBKEY"
      */
     @RequiresApi(Build.VERSION_CODES.M)
-    fun getVapidHeader(): String {
+    fun getVapidHeader(fakeKeys: Boolean = false): String {
         val header = JSONObject()
             .put("alg", "ES256")
             .put("typ", "JWT")
@@ -176,7 +176,9 @@ class ApplicationServer(val context: Context) {
             .replace("\\/", "/")
             .toByteArray(Charsets.UTF_8)
             .b64encode()
-        val signature = sign("$header.$body".toByteArray(Charsets.UTF_8))?.b64encode() ?: ""
+        val toSign = "$header.$body".toByteArray(Charsets.UTF_8)
+        val signature = (if (fakeKeys) signWithTempKey(toSign)
+            else sign(toSign))?.b64encode() ?: ""
         val jwt = "$header.$body.$signature"
         return "vapid t=$jwt,k=${store.vapidPubKey}"
     }
@@ -225,6 +227,16 @@ class ApplicationServer(val context: Context) {
         }
         return Signature.getInstance("SHA256withECDSA").run {
             initSign(entry.privateKey)
+            update(data)
+            sign()
+        }
+    }
+
+    private fun signWithTempKey(data: ByteArray): ByteArray? {
+        val keyPair: KeyPair =
+            EllipticCurves.generateKeyPair(EllipticCurves.CurveType.NIST_P256)
+        return Signature.getInstance("SHA256withECDSA").run {
+            initSign(keyPair.private)
             update(data)
             sign()
         }
