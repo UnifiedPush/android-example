@@ -61,6 +61,7 @@ open class WithOverlayActivity: AppCompatActivity()  {
             findItem(R.id.action_cleartext_test)?.setOnMenuItemClickListener {
                 store.devCleartextTest = !store.devCleartextTest
                 setMenuItemVisibility(menu)
+                this@WithOverlayActivity.updateRegistrationInfo()
                 false
             }
             findItem(R.id.action_wrongkeys_test)?.setOnMenuItemClickListener {

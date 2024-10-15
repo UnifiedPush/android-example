@@ -8,12 +8,14 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isGone
 import org.unifiedpush.android.connector.LinkActivityHelper
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.example.ApplicationServer
 import org.unifiedpush.example.R
 import org.unifiedpush.example.TestService
+import org.unifiedpush.example.Urgency
 import org.unifiedpush.example.activities.MainActivity.Companion.goToMainActivity
 import org.unifiedpush.example.utils.RegistrationDialogs
 import org.unifiedpush.example.utils.TAG
@@ -68,6 +70,9 @@ class CheckActivity : WithOverlayActivity() {
         findViewById<Button>(R.id.button_change_distrib).setOnClickListener {
             RegistrationDialogs(this, mayUseCurrent = false, mayUseDefault = false).run()
         }
+        findViewById<Button>(R.id.button_set_urgency).setOnClickListener {
+            chooseUrgencyDialog()
+        }
         setDevButtonsVisibility()
     }
 
@@ -81,11 +86,13 @@ class CheckActivity : WithOverlayActivity() {
             R.id.button_start_service,
             R.id.button_test_deep_link,
             R.id.button_change_distrib,
+            R.id.button_set_urgency
         )
         devButtons.forEach {
             findViewById<Button>(it).isGone = gone
         }
         findViewById<Button>(R.id.button_start_service).isEnabled = TestService.isStarted()
+        findViewById<Button>(R.id.button_set_urgency).isEnabled = !store.devCleartextTest
     }
 
     /**
@@ -160,6 +167,21 @@ class CheckActivity : WithOverlayActivity() {
                 text = ApplicationServer(context).getVapidHeader()
             }
         }
+    }
+
+    private fun chooseUrgencyDialog() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Choose urgency")
+
+        val options = Urgency.entries.map { it.value }.toTypedArray()
+        val checked = options.indexOf(store.urgency.value)
+
+        builder.setSingleChoiceItems(options, checked) { _, which ->
+            store.urgency = Urgency.fromValue(options[which])
+        }
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 
     private fun unregister() {

@@ -115,7 +115,7 @@ class ApplicationServer(val context: Context) {
                     val params: MutableMap<String, String> = HashMap()
                     params["Content-Encoding"] = "aes128gcm"
                     params["TTL"] = "0"
-                    params["Urgency"] = "high"
+                    params["Urgency"] = store.urgency.value
                     if (vapidImplementedForSdk() &&
                         ((store.devMode && store.devUseVapid) ||
                                         store.distributorRequiresVapid)) {

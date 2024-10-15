@@ -12,6 +12,7 @@ private const val PREF_DEV_WRONG_VAPID_KEYS = "org.unifiedpush.example::store::d
 private const val PREF_DEV_FORCE_ENCRYPTED = "org.unifiedpush.example::store::dev::forceEncrypted"
 private const val PREF_DEV_USE_VAPID = "org.unifiedpush.example::store::dev::useVapid"
 private const val PREF_ENDPOINT = "org.unifiedpush.example::store::endpoint"
+private const val PREF_URGENCY = "org.unifiedpush.example::store::urgency"
 private const val PREF_PUBKEY = "org.unifiedpush.example::store::pubkey"
 private const val PREF_AUTHKEY = "org.unifiedpush.example::store::authkey"
 private const val PREF_DISTRIB_REQ_VAPID = "org.unifiedpush.example::store::distribRequiresVapid"
@@ -62,6 +63,10 @@ class Store(val context: Context) {
                 prefs.edit().putString(PREF_ENDPOINT, value).apply()
             }
         }
+
+    var urgency: Urgency
+        get() = Urgency.fromValue(prefs.getString(PREF_URGENCY, null))
+        set(value) = prefs.edit().putString(PREF_URGENCY, value.value).apply()
 
     /**
      * Store the pubkey for the registration on the "server"
