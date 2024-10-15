@@ -155,12 +155,13 @@ class ApplicationServer(val context: Context) {
      */
     @RequiresApi(Build.VERSION_CODES.M)
     fun getVapidHeader(fakeKeys: Boolean = false): String {
+        val endpointStr = store.endpoint ?: return ""
         val header = JSONObject()
             .put("alg", "ES256")
             .put("typ", "JWT")
             .toString().toByteArray(Charsets.UTF_8)
             .b64encode()
-        val endpoint = URL(store.endpoint)
+        val endpoint = URL(endpointStr)
         val time12h = ((System.currentTimeMillis() / 1000) + 43200).toString() // +12h
 
         /**
