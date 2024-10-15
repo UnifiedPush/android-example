@@ -7,13 +7,16 @@ import android.security.keystore.KeyProperties
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.android.volley.NetworkResponse
 import com.android.volley.RequestQueue
 import com.android.volley.Response
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.crypto.tink.apps.webpush.WebPushHybridEncrypt
 import com.google.crypto.tink.subtle.EllipticCurves
 import org.json.JSONObject
+import org.unifiedpush.example.utils.RawRequest
 import org.unifiedpush.example.utils.TAG
 import java.net.URL
 import java.security.KeyPair
@@ -33,11 +36,43 @@ class ApplicationServer(val context: Context) {
 
     fun sendNotification(callback: (error: String?) -> Unit) {
         if (store.devMode && store.devCleartextTest) {
-            sendPlainTextNotification(callback)
+            sendPlainTextNotification { e ->
+                callbackWithToasts(e, callback)
+            }
         } else if (store.devMode && store.devWrongKeysTest) {
-            sendWebPushNotification(fakeKeys = true, callback)
+            sendWebPushNotification(content = "This is impossible to decrypt", fakeKeys = true) { _, e ->
+                callbackWithToasts(e, callback)
+            }
         } else {
-            sendWebPushNotification(callback)
+            sendWebPushNotification(content = "WebPush test", fakeKeys = false) { _, e ->
+                callbackWithToasts(e, callback)
+            }
+        }
+    }
+
+    private fun callbackWithToasts(e: VolleyError?, callback: (error: String?) -> Unit) {
+        e?.let {
+            Toast.makeText(context, "An error occurred.", Toast.LENGTH_SHORT).show()
+            callback(it.toString())
+        } ?: run {
+            Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
+            callback(null)
+        }
+    }
+
+    fun sendTestTTLNotification(callback: (error: String?) -> Unit) {
+        sendWebPushNotification(content = "This must be deleted before being delivered.", fakeKeys = false) { r, e ->
+            e?.let { return@sendWebPushNotification callback(e.toString()) }
+            r?.let { rep ->
+                var ttl: String?
+                if (rep.headers?.keys?.contains("TTL") != true) {
+                    return@sendWebPushNotification callback("The response doesn't contain TTL header.")
+                } else if (rep.headers?.get("TTL").also { ttl = it } != "5") {
+                    return@sendWebPushNotification callback("The response doesn't support TTL for 5 seconds (TTL=$ttl).")
+                } else {
+                    return@sendWebPushNotification callback(null)
+                }
+            }
         }
     }
 
@@ -47,7 +82,7 @@ class ApplicationServer(val context: Context) {
      *
      * Will be used in dev mode.
      */
-    private fun sendPlainTextNotification(callback: (error: String?) -> Unit) {
+    private fun sendPlainTextNotification(callback: (error: VolleyError?) -> Unit) {
         val requestQueue: RequestQueue = Volley.newRequestQueue(context)
         val url = Store(context).endpoint
         val stringRequest: StringRequest =
@@ -56,14 +91,9 @@ class ApplicationServer(val context: Context) {
                     Method.POST,
                     url,
                     Response.Listener {
-                        Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
                         callback(null)
                     },
-                    Response.ErrorListener { e ->
-                        Toast.makeText(context, "An error occurred.", Toast.LENGTH_SHORT).show()
-                        Log.e(TAG, "An error occurred while testing the endpoint:\n$e")
-                        callback(e.toString())
-                    },
+                    Response.ErrorListener(callback),
                 ) {
                 override fun getParams(): MutableMap<String, String> {
                     val params = mutableMapOf<String, String>()
@@ -79,52 +109,44 @@ class ApplicationServer(val context: Context) {
     /**
      * Send a notification encrypted with RFC8291
      */
-    private fun sendWebPushNotification(callback: (error: String?) -> Unit) {
-        sendWebPushNotification(fakeKeys = false, callback)
-    }
-
-    private fun sendWebPushNotification(fakeKeys: Boolean, callback: (error: String?) -> Unit) {
+    private fun sendWebPushNotification(content: String, fakeKeys: Boolean, callback: (response: NetworkResponse?, error: VolleyError?) -> Unit) {
         val requestQueue: RequestQueue = Volley.newRequestQueue(context)
         val url = Store(context).endpoint
-        val stringRequest: StringRequest =
-            object :
-                StringRequest(
-                    Method.POST,
-                    url,
-                    Response.Listener {
-                        Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
-                        callback(null)
-                    },
-                    Response.ErrorListener { e ->
-                        Toast.makeText(context, "An error occurred.", Toast.LENGTH_SHORT).show()
-                        Log.e(TAG, "An error occurred while testing the endpoint:\n$e")
-                        callback(e.toString())
-                    },
-                ) {
-                override fun getBody(): ByteArray {
-                    val auth = if (fakeKeys) { genAuth() } else { store.b64authSecret?.b64decode() }
-                    val hybridEncrypt =
-                        WebPushHybridEncrypt.Builder()
-                            .withAuthSecret(auth)
-                            .withRecipientPublicKey(store.serializedPubKey?.decodePubKey() as ECPublicKey)
-                            .build()
-                    return hybridEncrypt.encrypt("WebPush test".toByteArray(), null)
-                }
-
-                override fun getHeaders(): Map<String, String> {
-                    val params: MutableMap<String, String> = HashMap()
-                    params["Content-Encoding"] = "aes128gcm"
-                    params["TTL"] = "0"
-                    params["Urgency"] = store.urgency.value
-                    if (vapidImplementedForSdk() &&
-                        ((store.devMode && store.devUseVapid) ||
-                                        store.distributorRequiresVapid)) {
-                        params["Authorization"] = getVapidHeader(fakeKeys = (store.devMode && store.devWrongVapidKeysTest))
-                    }
-                    return params
-                }
+        val request = object :
+            RawRequest(
+                Method.POST,
+                url,
+                Response.Listener { r ->
+                    callback(r, null)
+                },
+                Response.ErrorListener { e ->
+                    callback(null, e)
+                },
+            ) {
+            override fun getBody(): ByteArray {
+                val auth = if (fakeKeys) { genAuth() } else { store.b64authSecret?.b64decode() }
+                val hybridEncrypt =
+                    WebPushHybridEncrypt.Builder()
+                        .withAuthSecret(auth)
+                        .withRecipientPublicKey(store.serializedPubKey?.decodePubKey() as ECPublicKey)
+                        .build()
+                return hybridEncrypt.encrypt(content.toByteArray(), null)
             }
-        requestQueue.add(stringRequest)
+
+            override fun getHeaders(): Map<String, String> {
+                val params: MutableMap<String, String> = HashMap()
+                params["Content-Encoding"] = "aes128gcm"
+                params["TTL"] = "5"
+                params["Urgency"] = store.urgency.value
+                if (vapidImplementedForSdk() &&
+                    ((store.devMode && store.devUseVapid) ||
+                            store.distributorRequiresVapid)) {
+                    params["Authorization"] = getVapidHeader(fakeKeys = (store.devMode && store.devWrongVapidKeysTest))
+                }
+                return params
+            }
+        }
+        requestQueue.add(request)
     }
 
     private fun genAuth(): ByteArray {

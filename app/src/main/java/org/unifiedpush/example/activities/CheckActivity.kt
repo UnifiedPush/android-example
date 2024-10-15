@@ -15,6 +15,7 @@ import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.example.ApplicationServer
 import org.unifiedpush.example.R
 import org.unifiedpush.example.TestService
+import org.unifiedpush.example.Tests
 import org.unifiedpush.example.Urgency
 import org.unifiedpush.example.activities.MainActivity.Companion.goToMainActivity
 import org.unifiedpush.example.utils.RegistrationDialogs
@@ -35,7 +36,7 @@ class CheckActivity : WithOverlayActivity() {
         findViewById<Button>(R.id.button_unregister).setOnClickListener { unregister() }
         findViewById<Button>(R.id.button_notify).setOnClickListener {
             ApplicationServer(this).sendNotification { error ->
-                findViewById<TextView>(R.id.error_text).text = error ?: ""
+                findViewById<TextView>(R.id.error_text).text = error?.let { "Error:\n$error" } ?: ""
             }
         }
 
@@ -73,6 +74,12 @@ class CheckActivity : WithOverlayActivity() {
         findViewById<Button>(R.id.button_set_urgency).setOnClickListener {
             chooseUrgencyDialog()
         }
+        findViewById<Button>(R.id.button_test_ttl).setOnClickListener {
+            Tests(this).testTTL { error ->
+                Log.d(TAG, "Error: $error")
+                findViewById<TextView>(R.id.error_text).text = error?.let { "Error:\n$error" } ?: ""
+            }
+        }
         setDevButtonsVisibility()
     }
 
@@ -86,7 +93,8 @@ class CheckActivity : WithOverlayActivity() {
             R.id.button_start_service,
             R.id.button_test_deep_link,
             R.id.button_change_distrib,
-            R.id.button_set_urgency
+            R.id.button_set_urgency,
+            R.id.button_test_ttl,
         )
         devButtons.forEach {
             findViewById<Button>(it).isGone = gone
