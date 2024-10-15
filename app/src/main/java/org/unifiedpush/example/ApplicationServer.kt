@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -17,7 +16,6 @@ import com.google.crypto.tink.subtle.EllipticCurves
 import org.json.JSONObject
 import org.unifiedpush.example.utils.TAG
 import java.net.URL
-import java.security.KeyFactory
 import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.KeyStore
@@ -26,7 +24,6 @@ import java.security.SecureRandom
 import java.security.Signature
 import java.security.interfaces.ECPublicKey
 import java.security.spec.ECGenParameterSpec
-import java.security.spec.ECPublicKeySpec
 
 /**
  * This class emulates an application server
