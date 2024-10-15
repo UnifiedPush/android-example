@@ -35,12 +35,7 @@ class CheckActivity : WithOverlayActivity() {
 
         findViewById<Button>(R.id.button_unregister).setOnClickListener { unregister() }
         findViewById<Button>(R.id.button_notify).setOnClickListener {
-            ApplicationServer(this).sendNotification { error ->
-                findViewById<TextView>(R.id.error_text).apply {
-                    text = error?.let { "Error:\n$error" } ?: ""
-                    isGone = error == null
-                }
-            }
+            ApplicationServer(this).sendNotification { setError(it) }
         }
 
         setDevButtons()
@@ -78,15 +73,20 @@ class CheckActivity : WithOverlayActivity() {
             chooseUrgencyDialog()
         }
         findViewById<Button>(R.id.button_test_ttl).setOnClickListener {
-            Tests(this).testTTL { error ->
-                Log.d(TAG, "Error: $error")
-                findViewById<TextView>(R.id.error_text).apply {
-                    text = error?.let { "Error:\n$error" } ?: ""
-                    isGone = error == null
-                }
-            }
+            Tests(this).testTTL { setError(it) }
+        }
+        findViewById<Button>(R.id.button_test_topic).setOnClickListener {
+            Tests(this).testTopic { setError(it) }
         }
         setDevButtonsVisibility()
+    }
+
+    private fun setError(error: String?) {
+        Log.d(TAG, "Error: $error")
+        findViewById<TextView>(R.id.error_text).apply {
+            text = error?.let { "Error:\n$error" } ?: ""
+            isGone = error == null
+        }
     }
 
     /**
@@ -100,6 +100,7 @@ class CheckActivity : WithOverlayActivity() {
             R.id.button_test_deep_link,
             R.id.button_change_distrib,
             R.id.button_set_urgency,
+            R.id.button_test_topic,
             R.id.button_test_ttl,
         )
         devButtons.forEach {
@@ -107,6 +108,8 @@ class CheckActivity : WithOverlayActivity() {
         }
         findViewById<Button>(R.id.button_start_service).isEnabled = TestService.isStarted()
         findViewById<Button>(R.id.button_set_urgency).isEnabled = !store.devCleartextTest
+        findViewById<Button>(R.id.button_test_topic).isEnabled = !store.devCleartextTest
+        findViewById<Button>(R.id.button_test_ttl).isEnabled = !store.devCleartextTest
     }
 
     /**

@@ -76,6 +76,21 @@ class ApplicationServer(val context: Context) {
         }
     }
 
+    fun sendTestTopicNotifications(callback: (error: String?) -> Unit) {
+        sendWebPushNotification(content = "1st notification, it must be replaced before being delivered.", fakeKeys = false, topic = "test") { _, e1 ->
+            e1?.let { return@sendWebPushNotification callbackWithToasts(e1, callback) }
+                ?: run {
+                    sendWebPushNotification(
+                        content = "2nd notification, it must have replaced the previous one.",
+                        fakeKeys = false,
+                        topic = "test"
+                    ) { _, e2 ->
+                        callbackWithToasts(e2, callback)
+                    }
+                }
+        }
+    }
+
     /**
      * @hide
      * Send plain text notifications.
@@ -109,7 +124,7 @@ class ApplicationServer(val context: Context) {
     /**
      * Send a notification encrypted with RFC8291
      */
-    private fun sendWebPushNotification(content: String, fakeKeys: Boolean, callback: (response: NetworkResponse?, error: VolleyError?) -> Unit) {
+    private fun sendWebPushNotification(content: String, fakeKeys: Boolean, topic: String? = null, callback: (response: NetworkResponse?, error: VolleyError?) -> Unit) {
         val requestQueue: RequestQueue = Volley.newRequestQueue(context)
         val url = Store(context).endpoint
         val request = object :
@@ -138,6 +153,9 @@ class ApplicationServer(val context: Context) {
                 params["Content-Encoding"] = "aes128gcm"
                 params["TTL"] = "5"
                 params["Urgency"] = store.urgency.value
+                topic?.let {
+                    params["Topic"] = it
+                }
                 if (vapidImplementedForSdk() &&
                     ((store.devMode && store.devUseVapid) ||
                             store.distributorRequiresVapid)) {

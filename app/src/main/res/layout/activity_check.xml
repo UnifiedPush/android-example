@@ -263,6 +263,18 @@
                 app:layout_constraintTop_toBottomOf="@+id/button_change_distrib"
                 android:layout_marginLeft="16dp" />
 
+            <Button
+                android:id="@+id/button_test_topic"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Test topic"
+                app:layout_constraintEnd_toEndOf="@+id/button_test_deep_link"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_set_urgency"
+                android:layout_marginLeft="16dp" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
