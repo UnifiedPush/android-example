@@ -36,7 +36,10 @@ class CheckActivity : WithOverlayActivity() {
         findViewById<Button>(R.id.button_unregister).setOnClickListener { unregister() }
         findViewById<Button>(R.id.button_notify).setOnClickListener {
             ApplicationServer(this).sendNotification { error ->
-                findViewById<TextView>(R.id.error_text).text = error?.let { "Error:\n$error" } ?: ""
+                findViewById<TextView>(R.id.error_text).apply {
+                    text = error?.let { "Error:\n$error" } ?: ""
+                    isGone = error == null
+                }
             }
         }
 
@@ -77,7 +80,10 @@ class CheckActivity : WithOverlayActivity() {
         findViewById<Button>(R.id.button_test_ttl).setOnClickListener {
             Tests(this).testTTL { error ->
                 Log.d(TAG, "Error: $error")
-                findViewById<TextView>(R.id.error_text).text = error?.let { "Error:\n$error" } ?: ""
+                findViewById<TextView>(R.id.error_text).apply {
+                    text = error?.let { "Error:\n$error" } ?: ""
+                    isGone = error == null
+                }
             }
         }
         setDevButtonsVisibility()
