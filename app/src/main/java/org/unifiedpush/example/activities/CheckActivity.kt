@@ -139,6 +139,8 @@ class CheckActivity : WithOverlayActivity() {
                 setDevButtonsVisibility()
             }
         setEndpointOrGoToMain()
+        setVapid()
+        setDevButtonsVisibility()
     }
 
     override fun onPause() {

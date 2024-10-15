@@ -39,6 +39,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
             notify(context, params)
             if (store.devStartForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 TestService.startForeground(context)
+                context.updateRegistrationInfo()
             }
         }
     }
