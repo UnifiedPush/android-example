@@ -78,6 +78,9 @@ class CheckActivity : WithOverlayActivity() {
         findViewById<Button>(R.id.button_test_topic).setOnClickListener {
             Tests(this).testTopic { setError(it) }
         }
+        findViewById<Button>(R.id.button_test_in_background).setOnClickListener {
+            Tests(this).testMessageInBackgroundStart()
+        }
         setDevButtonsVisibility()
     }
 
@@ -102,6 +105,7 @@ class CheckActivity : WithOverlayActivity() {
             R.id.button_set_urgency,
             R.id.button_test_topic,
             R.id.button_test_ttl,
+            R.id.button_test_in_background,
         )
         devButtons.forEach {
             findViewById<Button>(it).isGone = gone
@@ -142,6 +146,7 @@ class CheckActivity : WithOverlayActivity() {
         internalReceiver?.let {
             unregisterReceiver(it)
         }
+        Tests(this).testMessageInBackgroundRun { setError(it) }
     }
 
     private fun setEndpointOrGoToMain() {

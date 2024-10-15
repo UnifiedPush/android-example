@@ -275,6 +275,18 @@
                 app:layout_constraintTop_toBottomOf="@+id/button_set_urgency"
                 android:layout_marginLeft="16dp" />
 
+            <Button
+                android:id="@+id/button_test_in_background"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="16dp"
+                android:text="Test In Background"
+                app:layout_constraintEnd_toEndOf="@+id/button_notify"
+                app:layout_constraintStart_toStartOf="@+id/button_notify"
+                app:layout_constraintTop_toBottomOf="@+id/button_test_ttl"
+                android:layout_marginLeft="16dp" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>

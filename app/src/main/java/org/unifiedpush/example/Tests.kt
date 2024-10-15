@@ -83,4 +83,59 @@ class Tests(private val activity: Activity) {
         }
         builder.create().show()
     }
+
+    /**
+     * Display introduction for test sending a notification while the app is in background.
+     *
+     * Calls [testMessageInBackgroundIntro] and set [runBackgroundCheck] to `true`.
+     *
+     * It requires the user to put the application in background and [testMessageInBackgroundRun]
+     * to be called in [Activity.onPause].
+     */
+    fun testMessageInBackgroundStart() {
+        testMessageInBackgroundIntro { runBackgroundCheck = true }
+    }
+
+    private fun testMessageInBackgroundIntro(onSuccess: () -> Unit) {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
+        builder.setTitle("Testing notifications in background")
+        builder.setMessage("To check, you need to put this application in the background.\n" +
+                "A notification will be sent after 5 seconds.\n\n" +
+                "Be aware that it may not work on some devices. In this case, You can send unencrypted " +
+                "POST message to the endpoint via a terminal to test foreground services.\n\n" +
+                "Press OK to continue.")
+        builder.setPositiveButton(android.R.string.ok) { _, _ ->
+            Toast.makeText(activity, "Notification will be sent in the background", Toast.LENGTH_SHORT).show()
+            onSuccess()
+        }
+        builder.setNegativeButton(android.R.string.cancel) { _, _ ->
+            Toast.makeText(activity, "Aborting", Toast.LENGTH_SHORT).show()
+        }
+        builder.create().show()
+    }
+
+    /**
+     * Send a notification after 5 seconds.
+     *
+     * Should be called in [Activity.onPause]
+     */
+    fun testMessageInBackgroundRun(callback: (error: String?) -> Unit) {
+        if (runBackgroundCheck) {
+            runBackgroundCheck = false
+            Timer().schedule(5_000L) {
+                ApplicationServer(activity).sendNotification(callback)
+                activity.runOnUiThread {
+                    Toast.makeText(
+                        activity,
+                        "Notification sent.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
+    companion object {
+        var runBackgroundCheck = false
+    }
 }
