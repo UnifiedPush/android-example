@@ -18,6 +18,11 @@ import com.google.crypto.tink.subtle.EllipticCurves
 import org.json.JSONObject
 import org.unifiedpush.example.utils.RawRequest
 import org.unifiedpush.example.utils.TAG
+import org.unifiedpush.example.utils.b64decode
+import org.unifiedpush.example.utils.b64encode
+import org.unifiedpush.example.utils.decodePubKey
+import org.unifiedpush.example.utils.encode
+import org.unifiedpush.example.utils.vapidImplementedForSdk
 import java.net.URL
 import java.security.KeyPair
 import java.security.KeyPairGenerator

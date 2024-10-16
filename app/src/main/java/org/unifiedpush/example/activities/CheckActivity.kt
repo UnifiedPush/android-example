@@ -22,7 +22,7 @@ import org.unifiedpush.example.utils.RegistrationDialogs
 import org.unifiedpush.example.utils.TAG
 import org.unifiedpush.example.utils.registerOnRegistrationUpdate
 import org.unifiedpush.example.utils.updateRegistrationInfo
-import org.unifiedpush.example.vapidImplementedForSdk
+import org.unifiedpush.example.utils.vapidImplementedForSdk
 
 
 class CheckActivity : WithOverlayActivity() {

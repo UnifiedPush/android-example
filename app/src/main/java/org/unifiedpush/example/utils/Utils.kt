@@ -1,4 +1,4 @@
-package org.unifiedpush.example
+package org.unifiedpush.example.utils
 
 import android.os.Build
 import android.util.Base64

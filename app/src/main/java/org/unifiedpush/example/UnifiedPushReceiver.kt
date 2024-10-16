@@ -14,6 +14,7 @@ import org.unifiedpush.example.utils.Notifier
 import org.unifiedpush.example.utils.TAG
 import org.unifiedpush.example.utils.decodeMessage
 import org.unifiedpush.example.utils.updateRegistrationInfo
+import org.unifiedpush.example.utils.vapidImplementedForSdk
 
 class UnifiedPushReceiver : MessagingReceiver() {
     override fun onMessage(
