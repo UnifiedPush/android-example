@@ -8,7 +8,7 @@
         android:checkable="true" />
     <item android:id="@+id/action_force_encrypted"
         app:showAsAction="never"
-        android:title="Force encrypted messages"
+        android:title="Error if decryption fails"
         android:checkable="true" />
     <item android:id="@+id/action_use_vapid"
         app:showAsAction="never"
