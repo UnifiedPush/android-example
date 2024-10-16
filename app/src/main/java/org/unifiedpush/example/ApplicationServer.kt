@@ -175,7 +175,7 @@ class ApplicationServer(private val context: Context) {
                 val params: MutableMap<String, String> = HashMap()
                 params["Content-Encoding"] = "aes128gcm"
                 params["TTL"] = "$ttl"
-                params["Urgency"] = store.urgency.value
+                params["Urgency"] = if (store.devMode) store.urgency.value else Urgency.HIGH.value
                 topic?.let {
                     params["Topic"] = it
                 }
