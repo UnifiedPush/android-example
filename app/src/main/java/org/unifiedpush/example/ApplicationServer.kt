@@ -36,9 +36,14 @@ import java.security.spec.ECGenParameterSpec
 /**
  * This class emulates an application server
  */
-class ApplicationServer(val context: Context) {
+class ApplicationServer(private val context: Context) {
     private val store = Store(context)
 
+    /**
+     * Emulate notification sent from the application server to the push service.
+     *
+     * If the request fail, [callback] runs with the error message.
+     */
     fun sendNotification(callback: (error: String?) -> Unit) {
         if (store.devMode && store.devCleartextTest) {
             sendPlainTextNotification { e ->
@@ -65,6 +70,11 @@ class ApplicationServer(val context: Context) {
         }
     }
 
+    /**
+     * Emulate notification sent from the application server to the push service with a TTL.
+     *
+     * If the request fail, or the response doesn't contain TTL=5 [callback] runs with the error message.
+     */
     fun sendTestTTLNotification(callback: (error: String?) -> Unit) {
         sendWebPushNotification(content = "This must be deleted before being delivered.", fakeKeys = false) { r, e ->
             e?.let { return@sendWebPushNotification callback(e.toString()) }
@@ -81,6 +91,13 @@ class ApplicationServer(val context: Context) {
         }
     }
 
+    /**
+     * Emulate 2 notifications sent from the application server to the push service with the same topic.
+     *
+     * If the distributor is not connected, the first push message should be override.
+     *
+     * If the request fail [callback] runs with the error message.
+     */
     fun sendTestTopicNotifications(callback: (error: String?) -> Unit) {
         sendWebPushNotification(content = "1st notification, it must be replaced before being delivered.", fakeKeys = false, topic = "test", ttl = 60) { _, e1 ->
             e1?.let { return@sendWebPushNotification callbackWithToasts(e1, callback) }
@@ -179,11 +196,16 @@ class ApplicationServer(val context: Context) {
         }
     }
 
-    // The endpoint is "sent" to the application server
+    /**
+     * Emulate saving the endpoint on the application server.
+     */
     fun storeEndpoint(endpoint: String?) {
         store.endpoint = endpoint
     }
 
+    /**
+     * Emulate saving the web push public keys on the application server.
+     */
     fun storeWebPushKeys(
         auth: String,
         p256dh: String,
@@ -258,7 +280,7 @@ class ApplicationServer(val context: Context) {
             load(null)
         }
         if (!ks.containsAlias(ALIAS) || !ks.entryInstanceOf(ALIAS, PrivateKeyEntry::class.java)) {
-            // This should be called. When we sign something, the key are already created.
+            // This should never be called. When we sign something, the key are already created.
             genVapidKey()
         }/* else {
             ks.deleteEntry(ALIAS)
