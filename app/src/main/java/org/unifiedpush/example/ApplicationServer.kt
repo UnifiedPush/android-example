@@ -285,7 +285,7 @@ class ApplicationServer(val context: Context) {
         }
     }
 
-    companion object {
+    private companion object {
         private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
         private const val ALIAS = "ApplicationServer"
     }

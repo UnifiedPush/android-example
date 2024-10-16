@@ -135,7 +135,7 @@ class Tests(private val activity: Activity) {
         }
     }
 
-    companion object {
+    private companion object {
         var runBackgroundCheck = false
     }
 }
