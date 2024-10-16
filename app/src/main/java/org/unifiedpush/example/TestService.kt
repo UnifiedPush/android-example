@@ -13,6 +13,14 @@ import androidx.annotation.RequiresApi
 import org.unifiedpush.example.utils.updateRegistrationInfo
 import kotlin.concurrent.Volatile
 
+/**
+ * Service to test [foreground services](https://developer.android.com/develop/background-work/services/foreground-services) started from the background.
+ *
+ * It isn't possible to start a foreground service from the background except if:
+ * - the application is unrestricted for battery use
+ * - the application has been set in saving power whitelist for some time (this happens after a FCM urgent push message)
+ * - the application is in foreground importance (a distributor can bring an application to foreground important by binding to the connector dedicated service)
+ */
 class TestService: Service() {
     override fun onBind(intent: Intent?): IBinder? {
         Log.d(TAG, "Bound")
@@ -73,6 +81,7 @@ class TestService: Service() {
     }
 
     companion object {
+        /** Start [TestService] in the foreground */
         @RequiresApi(Build.VERSION_CODES.O)
         fun startForeground(context: Context) {
             synchronized(lock) {
@@ -82,6 +91,8 @@ class TestService: Service() {
             }
             context.updateRegistrationInfo()
         }
+
+        /** Stop [TestService] */
         fun stop(context: Context) {
             synchronized(lock) {
                 val intent = Intent(context, TestService::class.java)
@@ -91,6 +102,7 @@ class TestService: Service() {
             context.updateRegistrationInfo()
         }
 
+        /** Is the foreground test service running ? */
         fun isStarted(): Boolean = synchronized(lock) {
             started
         }
