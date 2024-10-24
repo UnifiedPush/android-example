@@ -71,8 +71,8 @@ if (project.hasProperty('sign')) {
 }
 
 dependencies {
-    ext.connector = 'org.unifiedpush.android:connector:2.5.0'
-    ext.connector_ui = "org.unifiedpush.android:connector-ui:1.0.0-rc2"
+    ext.connector = 'org.unifiedpush.android:connector:3.0.0-rc1'
+    ext.connector_ui = "org.unifiedpush.android:connector-ui:1.0.0-rc3"
     ext.embedded_distrib = 'org.unifiedpush.android:embedded-fcm-distributor:2.5.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
