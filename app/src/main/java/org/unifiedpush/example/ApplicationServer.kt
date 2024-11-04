@@ -271,6 +271,14 @@ class ApplicationServer(private val context: Context) {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun updateVapidKey(): KeyPair {
+        KeyStore.getInstance(KEYSTORE_PROVIDER).apply {
+            load(null)
+        }.deleteEntry(ALIAS)
+        return genVapidKey()
+    }
+
     /**
      * Sign [data] using the generated VAPID key pair
      */

@@ -252,6 +252,18 @@
             android:layout_marginLeft="16dp" />
 
             <Button
+                android:id="@+id/button_update_vapid"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="16dp"
+                android:text="Update VAPID key"
+                app:layout_constraintEnd_toEndOf="@+id/button_notify"
+                app:layout_constraintStart_toStartOf="@+id/button_notify"
+                app:layout_constraintTop_toBottomOf="@+id/button_change_distrib"
+                android:layout_marginLeft="16dp" />
+
+            <Button
                 android:id="@+id/button_test_ttl"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -260,7 +272,7 @@
                 android:text="Test TTL"
                 app:layout_constraintEnd_toEndOf="@+id/button_notify"
                 app:layout_constraintStart_toStartOf="@+id/button_notify"
-                app:layout_constraintTop_toBottomOf="@+id/button_change_distrib"
+                app:layout_constraintTop_toBottomOf="@+id/button_update_vapid"
                 android:layout_marginLeft="16dp" />
 
             <Button
@@ -279,12 +291,12 @@
                 android:id="@+id/button_test_in_background"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="0dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="Test In Background"
-                app:layout_constraintEnd_toEndOf="@+id/button_notify"
-                app:layout_constraintStart_toStartOf="@+id/button_notify"
-                app:layout_constraintTop_toBottomOf="@+id/button_test_ttl"
+                app:layout_constraintEnd_toEndOf="@+id/button_test_deep_link"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_test_topic"
                 android:layout_marginLeft="16dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

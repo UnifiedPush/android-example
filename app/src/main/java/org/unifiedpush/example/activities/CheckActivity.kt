@@ -72,6 +72,12 @@ class CheckActivity : WithOverlayActivity() {
         findViewById<Button>(R.id.button_set_urgency).setOnClickListener {
             chooseUrgencyDialog()
         }
+        if (vapidImplementedForSdk()) {
+            findViewById<Button>(R.id.button_update_vapid).setOnClickListener {
+                ApplicationServer(this).updateVapidKey()
+                refreshUiOrGoToMain()
+            }
+        }
         findViewById<Button>(R.id.button_test_ttl).setOnClickListener {
             Tests(this).testTTL { setError(it) }
         }
@@ -103,6 +109,7 @@ class CheckActivity : WithOverlayActivity() {
             R.id.button_test_deep_link,
             R.id.button_change_distrib,
             R.id.button_set_urgency,
+            R.id.button_update_vapid,
             R.id.button_test_topic,
             R.id.button_test_ttl,
             R.id.button_test_in_background,
@@ -134,13 +141,9 @@ class CheckActivity : WithOverlayActivity() {
         super.onResume()
         internalReceiver =
             registerOnRegistrationUpdate {
-                setEndpointOrGoToMain()
-                setVapid()
-                setDevButtonsVisibility()
+                refreshUiOrGoToMain()
             }
-        setEndpointOrGoToMain()
-        setVapid()
-        setDevButtonsVisibility()
+        refreshUiOrGoToMain()
     }
 
     override fun onPause() {
@@ -151,7 +154,7 @@ class CheckActivity : WithOverlayActivity() {
         Tests(this).testMessageInBackgroundRun { setError(it) }
     }
 
-    private fun setEndpointOrGoToMain() {
+    private fun refreshUiOrGoToMain() {
         store.endpoint?.let {
             findViewById<TextView>(R.id.text_endpoint_value).apply {
                 text = it.also {
@@ -169,6 +172,7 @@ class CheckActivity : WithOverlayActivity() {
                 }
             }
             setVapid()
+            setDevButtons()
         } ?: run {
             goToMainActivity(this)
             finish()
@@ -179,6 +183,7 @@ class CheckActivity : WithOverlayActivity() {
         if (!vapidImplementedForSdk()) {
             findViewById<TextView>(R.id.text_vapid_required_by_distrib).isGone = true
             findViewById<TextView>(R.id.text_vapid_value).isGone = true
+            findViewById<Button>(R.id.button_update_vapid).isGone = true
         } else {
             val distUseVapid = store.distributorRequiresVapid
             val devUseVapid = store.devMode && store.devUseVapid
