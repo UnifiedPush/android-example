@@ -23,20 +23,21 @@ class UnifiedPushReceiver : MessagingReceiver() {
         instance: String,
     ) {
         val store = Store(context)
-        if (!store.devMode){
+        if (!store.devMode) {
             val params = decodeMessage(message.content.toString(Charsets.UTF_8))
             notify(context, params)
         } else {
             // For developer mode only
-            val params = if (store.devForceEncrypted && !message.decrypted) {
-                mapOf(
-                    "title" to "Error",
-                    "message" to "Couldn't decrypt message.",
-                    "priority" to "8",
-                )
-            } else {
-                decodeMessage(message.content.toString(Charsets.UTF_8))
-            }
+            val params =
+                if (store.devForceEncrypted && !message.decrypted) {
+                    mapOf(
+                        "title" to "Error",
+                        "message" to "Couldn't decrypt message.",
+                        "priority" to "8",
+                    )
+                } else {
+                    decodeMessage(message.content.toString(Charsets.UTF_8))
+                }
             notify(context, params)
             if (store.devStartForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 TestService.startForeground(context)
@@ -45,7 +46,10 @@ class UnifiedPushReceiver : MessagingReceiver() {
         }
     }
 
-    private fun notify(context: Context, params: Map<String, String>) {
+    private fun notify(
+        context: Context,
+        params: Map<String, String>,
+    ) {
         val text = params["message"] ?: "Internal error"
         val priority = params["priority"]?.toInt() ?: 8
         val title = params["title"] ?: context.getString(R.string.app_name)
@@ -62,13 +66,17 @@ class UnifiedPushReceiver : MessagingReceiver() {
         endpoint.pubKeySet?.let {
             ApplicationServer(context).storeWebPushKeys(
                 it.auth,
-                it.pubKey
+                it.pubKey,
             )
         }
         context.updateRegistrationInfo()
     }
 
-    override fun onRegistrationFailed(context: Context, reason: FailedReason, instance: String) {
+    override fun onRegistrationFailed(
+        context: Context,
+        reason: FailedReason,
+        instance: String,
+    ) {
         Toast.makeText(context, "Registration Failed: $reason", Toast.LENGTH_SHORT).show()
         if (reason == FailedReason.VAPID_REQUIRED) {
             if (vapidImplementedForSdk()) {
@@ -77,7 +85,11 @@ class UnifiedPushReceiver : MessagingReceiver() {
                 ApplicationServer(context).genVapidKey()
                 UnifiedPush.registerApp(context, instance, vapid = store.vapidPubKey)
             } else {
-                Toast.makeText(context, "Distributor requires VAPID but it isn't implemented for old Android versions.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Distributor requires VAPID but it isn't implemented for old Android versions.",
+                    Toast.LENGTH_SHORT,
+                ).show()
                 UnifiedPush.forceRemoveDistributor(context)
             }
         } else {
@@ -95,7 +107,6 @@ class UnifiedPushReceiver : MessagingReceiver() {
         val appName = context.getString(R.string.app_name)
         Toast.makeText(context, "$appName is unregistered", Toast.LENGTH_SHORT).show()
     }
-
 
     /**
      * Log when an event is received, even if it may be ignored, due to unknown token.

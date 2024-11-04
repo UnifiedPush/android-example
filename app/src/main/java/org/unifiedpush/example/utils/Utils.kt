@@ -18,9 +18,12 @@ fun vapidImplementedForSdk(): Boolean {
  * Decode [ECPublicKey] from [String]
  */
 fun String.decodePubKey(): ECPublicKey {
-    val point = EllipticCurves.pointDecode(
-        EllipticCurves.CurveType.NIST_P256,
-        EllipticCurves.PointFormatType.UNCOMPRESSED, this.b64decode())
+    val point =
+        EllipticCurves.pointDecode(
+            EllipticCurves.CurveType.NIST_P256,
+            EllipticCurves.PointFormatType.UNCOMPRESSED,
+            this.b64decode(),
+        )
     val spec = EllipticCurves.getCurveSpec(EllipticCurves.CurveType.NIST_P256)
     return KeyFactory.getInstance("EC").generatePublic(ECPublicKeySpec(point, spec)) as ECPublicKey
 }
@@ -29,11 +32,12 @@ fun String.decodePubKey(): ECPublicKey {
  * Encode [ECPublicKey] to [String]
  */
 fun ECPublicKey.encode(): String {
-    val points = EllipticCurves.pointEncode(
-        EllipticCurves.CurveType.NIST_P256,
-        EllipticCurves.PointFormatType.UNCOMPRESSED,
-        this.w
-    )
+    val points =
+        EllipticCurves.pointEncode(
+            EllipticCurves.CurveType.NIST_P256,
+            EllipticCurves.PointFormatType.UNCOMPRESSED,
+            this.w,
+        )
     return points.b64encode()
 }
 

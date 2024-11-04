@@ -21,7 +21,7 @@ import kotlin.concurrent.Volatile
  * - the application has been set in saving power whitelist for some time (this happens after a FCM urgent push message)
  * - the application is in foreground importance (a distributor can bring an application to foreground important by binding to the connector dedicated service)
  */
-class TestService: Service() {
+class TestService : Service() {
     override fun onBind(intent: Intent?): IBinder? {
         Log.d(TAG, "Bound")
         return null
@@ -44,14 +44,15 @@ class TestService: Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager =
                 this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "TestService",
-                NotificationManager.IMPORTANCE_HIGH
-            ).let {
-                it.description = "test"
-                it
-            }
+            val channel =
+                NotificationChannel(
+                    CHANNEL_ID,
+                    "TestService",
+                    NotificationManager.IMPORTANCE_HIGH,
+                ).let {
+                    it.description = "test"
+                    it
+                }
             notificationManager.createNotificationChannel(channel)
         }
     }
@@ -61,7 +62,7 @@ class TestService: Service() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Notification.Builder(
                     this,
-                    CHANNEL_ID
+                    CHANNEL_ID,
                 )
             } else {
                 Notification.Builder(this)
@@ -103,9 +104,10 @@ class TestService: Service() {
         }
 
         /** Is the foreground test service running ? */
-        fun isStarted(): Boolean = synchronized(lock) {
-            started
-        }
+        fun isStarted(): Boolean =
+            synchronized(lock) {
+                started
+            }
 
         @Volatile
         private var started = false

@@ -10,7 +10,7 @@ import org.unifiedpush.example.R
 import org.unifiedpush.example.Store
 import org.unifiedpush.example.utils.updateRegistrationInfo
 
-open class WithOverlayActivity: AppCompatActivity()  {
+open class WithOverlayActivity : AppCompatActivity() {
     lateinit var store: Store
 
     override fun onCreate(savedInstanceState: Bundle?) {

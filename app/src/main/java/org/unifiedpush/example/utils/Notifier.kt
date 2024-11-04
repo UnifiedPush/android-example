@@ -10,7 +10,6 @@ import org.unifiedpush.example.R
 import java.util.concurrent.ThreadLocalRandom
 
 class Notifier(var context: Context) {
-
     private val channelId = context.packageName
     private val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 

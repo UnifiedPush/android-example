@@ -20,7 +20,7 @@ class Tests(private val activity: Activity) {
                             Toast.makeText(
                                 activity,
                                 "You can reconnect your distributor.",
-                                Toast.LENGTH_SHORT
+                                Toast.LENGTH_SHORT,
                             ).show()
                         }
                     }
@@ -33,10 +33,12 @@ class Tests(private val activity: Activity) {
     private fun testTTLIntro(onSuccess: () -> Unit) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
         builder.setTitle("Testing TTL")
-        builder.setMessage("To check the TTL, you must first disconnect your distributor.\n" +
+        builder.setMessage(
+            "To check the TTL, you must first disconnect your distributor.\n" +
                 "You can reconnect it after 10 seconds.\n" +
                 "A notification will be sent, it should not be displayed by the application.\n\n" +
-                "Press OK once the distributor is disconnected.")
+                "Press OK once the distributor is disconnected.",
+        )
         builder.setPositiveButton(android.R.string.ok) { _, _ ->
             onSuccess()
         }
@@ -57,7 +59,7 @@ class Tests(private val activity: Activity) {
                             Toast.makeText(
                                 activity,
                                 "You can reconnect your distributor.",
-                                Toast.LENGTH_SHORT
+                                Toast.LENGTH_SHORT,
                             ).show()
                         }
                     }
@@ -70,11 +72,13 @@ class Tests(private val activity: Activity) {
     private fun testTopicIntro(onSuccess: () -> Unit) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
         builder.setTitle("Testing Topic")
-        builder.setMessage("To check topics, you must first disconnect your distributor.\n" +
+        builder.setMessage(
+            "To check topics, you must first disconnect your distributor.\n" +
                 "You can reconnect it after 10 seconds.\n" +
                 "2 notifications will be sent, only the 2nd one should be displayed by the application.\n\n" +
                 "If you see 2 notifications, your distributor doesn't support notification update.\n\n" +
-                "Press OK once the distributor is disconnected.")
+                "Press OK once the distributor is disconnected.",
+        )
         builder.setPositiveButton(android.R.string.ok) { _, _ ->
             onSuccess()
         }
@@ -99,11 +103,13 @@ class Tests(private val activity: Activity) {
     private fun testMessageInBackgroundIntro(onSuccess: () -> Unit) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
         builder.setTitle("Testing notifications in background")
-        builder.setMessage("To check, you need to put this application in the background.\n" +
+        builder.setMessage(
+            "To check, you need to put this application in the background.\n" +
                 "A notification will be sent after 5 seconds.\n\n" +
                 "Be aware that it may not work on some devices. In this case, You can send unencrypted " +
                 "POST message to the endpoint via a terminal to test foreground services.\n\n" +
-                "Press OK to continue.")
+                "Press OK to continue.",
+        )
         builder.setPositiveButton(android.R.string.ok) { _, _ ->
             Toast.makeText(activity, "Notification will be sent in the background", Toast.LENGTH_SHORT).show()
             onSuccess()
@@ -128,7 +134,7 @@ class Tests(private val activity: Activity) {
                     Toast.makeText(
                         activity,
                         "Notification sent.",
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_SHORT,
                     ).show()
                 }
             }

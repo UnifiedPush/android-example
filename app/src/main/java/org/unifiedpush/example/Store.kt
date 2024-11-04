@@ -24,7 +24,6 @@ private const val PREF_VAPID_PUBKEY = "org.unifiedpush.example::store::vapidPubK
 class Store(val context: Context) {
     private val prefs = context.getSharedPreferences(PREF_MASTER, Context.MODE_PRIVATE)
 
-
     /** Is Developer mode enabled. */
     var devMode: Boolean
         get() = prefs.getBoolean(PREF_DEV_MODE, false)

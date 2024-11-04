@@ -60,7 +60,10 @@ class ApplicationServer(private val context: Context) {
         }
     }
 
-    private fun callbackWithToasts(e: VolleyError?, callback: (error: String?) -> Unit) {
+    private fun callbackWithToasts(
+        e: VolleyError?,
+        callback: (error: String?) -> Unit,
+    ) {
         e?.let {
             Toast.makeText(context, "An error occurred.", Toast.LENGTH_SHORT).show()
             callback(it.toString())
@@ -99,14 +102,19 @@ class ApplicationServer(private val context: Context) {
      * If the request fail [callback] runs with the error message.
      */
     fun sendTestTopicNotifications(callback: (error: String?) -> Unit) {
-        sendWebPushNotification(content = "1st notification, it must be replaced before being delivered.", fakeKeys = false, topic = "test", ttl = 60) { _, e1 ->
+        sendWebPushNotification(
+            content = "1st notification, it must be replaced before being delivered.",
+            fakeKeys = false,
+            topic = "test",
+            ttl = 60,
+        ) { _, e1 ->
             e1?.let { return@sendWebPushNotification callbackWithToasts(e1, callback) }
                 ?: run {
                     sendWebPushNotification(
                         content = "2nd notification, it must have replaced the previous one.",
                         fakeKeys = false,
                         topic = "test",
-                        ttl = 60
+                        ttl = 60,
                     ) { _, e2 ->
                         callbackWithToasts(e2, callback)
                     }
@@ -147,46 +155,61 @@ class ApplicationServer(private val context: Context) {
     /**
      * Send a notification encrypted with RFC8291
      */
-    private fun sendWebPushNotification(content: String, fakeKeys: Boolean, topic: String? = null, ttl: Int = 5, callback: (response: NetworkResponse?, error: VolleyError?) -> Unit) {
+    private fun sendWebPushNotification(
+        content: String,
+        fakeKeys: Boolean,
+        topic: String? = null,
+        ttl: Int = 5,
+        callback: (response: NetworkResponse?, error: VolleyError?) -> Unit,
+    ) {
         val requestQueue: RequestQueue = Volley.newRequestQueue(context)
         val url = Store(context).endpoint
-        val request = object :
-            RawRequest(
-                Method.POST,
-                url,
-                Response.Listener { r ->
-                    callback(r, null)
-                },
-                Response.ErrorListener { e ->
-                    callback(null, e)
-                },
-            ) {
-            override fun getBody(): ByteArray {
-                val auth = if (fakeKeys) { genAuth() } else { store.b64authSecret?.b64decode() }
-                val hybridEncrypt =
-                    WebPushHybridEncrypt.Builder()
-                        .withAuthSecret(auth)
-                        .withRecipientPublicKey(store.serializedPubKey?.decodePubKey() as ECPublicKey)
-                        .build()
-                return hybridEncrypt.encrypt(content.toByteArray(), null)
-            }
+        val request =
+            object :
+                RawRequest(
+                    Method.POST,
+                    url,
+                    Response.Listener { r ->
+                        callback(r, null)
+                    },
+                    Response.ErrorListener { e ->
+                        callback(null, e)
+                    },
+                ) {
+                override fun getBody(): ByteArray {
+                    val auth =
+                        if (fakeKeys) {
+                            genAuth()
+                        } else {
+                            store.b64authSecret?.b64decode()
+                        }
+                    val hybridEncrypt =
+                        WebPushHybridEncrypt.Builder()
+                            .withAuthSecret(auth)
+                            .withRecipientPublicKey(store.serializedPubKey?.decodePubKey() as ECPublicKey)
+                            .build()
+                    return hybridEncrypt.encrypt(content.toByteArray(), null)
+                }
 
-            override fun getHeaders(): Map<String, String> {
-                val params: MutableMap<String, String> = HashMap()
-                params["Content-Encoding"] = "aes128gcm"
-                params["TTL"] = "$ttl"
-                params["Urgency"] = if (store.devMode) store.urgency.value else Urgency.HIGH.value
-                topic?.let {
-                    params["Topic"] = it
+                override fun getHeaders(): Map<String, String> {
+                    val params: MutableMap<String, String> = HashMap()
+                    params["Content-Encoding"] = "aes128gcm"
+                    params["TTL"] = "$ttl"
+                    params["Urgency"] = if (store.devMode) store.urgency.value else Urgency.HIGH.value
+                    topic?.let {
+                        params["Topic"] = it
+                    }
+                    if (vapidImplementedForSdk() &&
+                        (
+                            (store.devMode && store.devUseVapid) ||
+                                store.distributorRequiresVapid
+                        )
+                    ) {
+                        params["Authorization"] = getVapidHeader(fakeKeys = (store.devMode && store.devWrongVapidKeysTest))
+                    }
+                    return params
                 }
-                if (vapidImplementedForSdk() &&
-                    ((store.devMode && store.devUseVapid) ||
-                            store.distributorRequiresVapid)) {
-                    params["Authorization"] = getVapidHeader(fakeKeys = (store.devMode && store.devWrongVapidKeysTest))
-                }
-                return params
             }
-        }
         requestQueue.add(request)
     }
 
@@ -224,27 +247,35 @@ class ApplicationServer(private val context: Context) {
     @RequiresApi(Build.VERSION_CODES.M)
     fun getVapidHeader(fakeKeys: Boolean = false): String {
         val endpointStr = store.endpoint ?: return ""
-        val header = JSONObject()
-            .put("alg", "ES256")
-            .put("typ", "JWT")
-            .toString().toByteArray(Charsets.UTF_8)
-            .b64encode()
+        val header =
+            JSONObject()
+                .put("alg", "ES256")
+                .put("typ", "JWT")
+                .toString().toByteArray(Charsets.UTF_8)
+                .b64encode()
         val endpoint = URL(endpointStr)
         val time12h = ((System.currentTimeMillis() / 1000) + 43200).toString() // +12h
 
         /**
          * [org.json.JSONStringer#string] Doesn't follow RFC, '/' = 0x2F doesn't have to be escaped
          */
-        val body = JSONObject()
-            .put("aud", "${endpoint.protocol}://${endpoint.authority}")
-            .put("exp", time12h)
-            .toString()
-            .replace("\\/", "/")
-            .toByteArray(Charsets.UTF_8)
-            .b64encode()
+        val body =
+            JSONObject()
+                .put("aud", "${endpoint.protocol}://${endpoint.authority}")
+                .put("exp", time12h)
+                .toString()
+                .replace("\\/", "/")
+                .toByteArray(Charsets.UTF_8)
+                .b64encode()
         val toSign = "$header.$body".toByteArray(Charsets.UTF_8)
-        val signature = (if (fakeKeys) signWithTempKey(toSign)
-            else sign(toSign))?.b64encode() ?: ""
+        val signature =
+            (
+                if (fakeKeys) {
+                    signWithTempKey(toSign)
+                } else {
+                    sign(toSign)
+                }
+            )?.b64encode() ?: ""
         val jwt = "$header.$body.$signature"
         return "vapid t=$jwt,k=${store.vapidPubKey}"
     }
@@ -262,7 +293,7 @@ class ApplicationServer(private val context: Context) {
                 .setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
                 .setDigests(KeyProperties.DIGEST_SHA256)
                 .setUserAuthenticationRequired(false)
-                .build()
+                .build(),
         )
         return generator.generateKeyPair().also {
             val pubkey = (it.public as ECPublicKey).encode()
@@ -284,16 +315,14 @@ class ApplicationServer(private val context: Context) {
      */
     @RequiresApi(Build.VERSION_CODES.M)
     private fun sign(data: ByteArray): ByteArray? {
-        val ks = KeyStore.getInstance(KEYSTORE_PROVIDER).apply {
-            load(null)
-        }
+        val ks =
+            KeyStore.getInstance(KEYSTORE_PROVIDER).apply {
+                load(null)
+            }
         if (!ks.containsAlias(ALIAS) || !ks.entryInstanceOf(ALIAS, PrivateKeyEntry::class.java)) {
             // This should never be called. When we sign something, the key are already created.
             genVapidKey()
-        }/* else {
-            ks.deleteEntry(ALIAS)
-            genKeyPair()
-        }*/
+        }
         val entry: KeyStore.Entry = ks.getEntry(ALIAS, null)
         if (entry !is PrivateKeyEntry) {
             Log.w(TAG, "Not an instance of a PrivateKeyEntry")

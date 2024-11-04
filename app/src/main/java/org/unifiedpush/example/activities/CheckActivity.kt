@@ -24,7 +24,6 @@ import org.unifiedpush.example.utils.registerOnRegistrationUpdate
 import org.unifiedpush.example.utils.updateRegistrationInfo
 import org.unifiedpush.example.utils.vapidImplementedForSdk
 
-
 class CheckActivity : WithOverlayActivity() {
     private var internalReceiver: BroadcastReceiver? = null
     private val helper = LinkActivityHelper(this)
@@ -103,17 +102,18 @@ class CheckActivity : WithOverlayActivity() {
      */
     private fun setDevButtonsVisibility() {
         val gone = !store.devMode
-        val devButtons = listOf(
-            R.id.button_reregister,
-            R.id.button_start_service,
-            R.id.button_test_deep_link,
-            R.id.button_change_distrib,
-            R.id.button_set_urgency,
-            R.id.button_update_vapid,
-            R.id.button_test_topic,
-            R.id.button_test_ttl,
-            R.id.button_test_in_background,
-        )
+        val devButtons =
+            listOf(
+                R.id.button_reregister,
+                R.id.button_start_service,
+                R.id.button_test_deep_link,
+                R.id.button_change_distrib,
+                R.id.button_set_urgency,
+                R.id.button_update_vapid,
+                R.id.button_test_topic,
+                R.id.button_test_ttl,
+                R.id.button_test_in_background,
+            )
         devButtons.forEach {
             findViewById<Button>(it).isGone = gone
         }
@@ -128,7 +128,11 @@ class CheckActivity : WithOverlayActivity() {
      *
      * If the link succeed, we register our app.
      */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+    ) {
         super.onActivityResult(requestCode, resultCode, data)
         val success = helper.onLinkActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "Distributor found=$success")
@@ -157,19 +161,22 @@ class CheckActivity : WithOverlayActivity() {
     private fun refreshUiOrGoToMain() {
         store.endpoint?.let {
             findViewById<TextView>(R.id.text_endpoint_value).apply {
-                text = it.also {
-                    Log.d(TAG, "endpoint $it")
-                }
+                text =
+                    it.also {
+                        Log.d(TAG, "endpoint $it")
+                    }
             }
             findViewById<TextView>(R.id.text_auth_value).apply {
-                text = store.b64authSecret.also {
-                    Log.d(TAG, "auth: $it")
-                }
+                text =
+                    store.b64authSecret.also {
+                        Log.d(TAG, "auth: $it")
+                    }
             }
             findViewById<TextView>(R.id.text_p256dh_value).apply {
-                text = store.serializedPubKey.also {
-                    Log.d(TAG, "p256dh: $it")
-                }
+                text =
+                    store.serializedPubKey.also {
+                        Log.d(TAG, "p256dh: $it")
+                    }
             }
             setVapid()
             setDevButtons()

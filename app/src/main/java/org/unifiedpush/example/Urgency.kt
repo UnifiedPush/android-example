@@ -16,12 +16,15 @@ package org.unifiedpush.example
 enum class Urgency(val value: String) {
     /** On power and Wi-Fi, example: Advertisements */
     VERY_LOW("very-low"),
+
     /** On either power or Wi-Fi, example: Topic updates */
     LOW("low"),
+
     /** On neither power nor Wi-Fi, example: Chat or Calendar Message */
     NORMAL("normal"),
+
     /** Low battery, example: Incoming phone call or time-sensitive alert */
-    HIGH("high"),;
+    HIGH("high"), ;
 
     companion object {
         fun fromValue(s: String?): Urgency {

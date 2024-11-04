@@ -6,7 +6,6 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpHeaderParser
 
-open class RawRequest
 /**
  * Creates a new request with the given method.
  *
@@ -14,11 +13,12 @@ open class RawRequest
  * @param url URL to fetch the string at
  * @param mListener Listener to receive the NetworkResponse response
  * @param errorListener Error listener, or null to ignore errors
- */(
+ */
+open class RawRequest(
     method: Int,
     url: String?,
     @field:GuardedBy("mLock") private var mListener: Response.Listener<NetworkResponse>?,
-    errorListener: Response.ErrorListener?
+    errorListener: Response.ErrorListener?,
 ) :
     Request<NetworkResponse>(method, url, errorListener) {
     /** Lock to guard mListener as it is cleared on cancel() and read on delivery.  */
@@ -34,9 +34,12 @@ open class RawRequest
     constructor(
         url: String?,
         listener: Response.Listener<NetworkResponse>?,
-        errorListener: Response.ErrorListener?
+        errorListener: Response.ErrorListener?,
     ) : this(
-        Method.GET, url, listener, errorListener
+        Method.GET,
+        url,
+        listener,
+        errorListener,
     )
 
     override fun cancel() {
