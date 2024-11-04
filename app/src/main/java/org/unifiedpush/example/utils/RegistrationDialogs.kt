@@ -4,6 +4,7 @@ import android.content.Context
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.ui.SelectDistributorDialogsBuilder
 import org.unifiedpush.android.connector.ui.UnifiedPushFunctions
+import org.unifiedpush.example.Store
 
 class RegistrationDialogs(context: Context, override var mayUseCurrent: Boolean, override var mayUseDefault: Boolean): SelectDistributorDialogsBuilder(
     context,
@@ -14,7 +15,11 @@ class RegistrationDialogs(context: Context, override var mayUseCurrent: Boolean,
 
         override fun getDistributors(): List<String> { return UnifiedPush.getDistributors(context) }
 
-        override fun registerApp(instance: String) { UnifiedPush.registerApp(context, instance) }
+        override fun registerApp(instance: String) {
+            val store = Store(context)
+            val vapid = if (store.devMode && store.devUseVapid) store.vapidPubKey else null
+            UnifiedPush.registerApp(context, instance, vapid)
+        }
 
         override fun saveDistributor(distributor: String) { UnifiedPush.saveDistributor(context, distributor) }
     },
