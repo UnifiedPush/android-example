@@ -156,7 +156,7 @@ class CheckActivity : WithOverlayActivity() {
             unregisterReceiver(it)
         }
         internalReceiver = null
-        Tests(this).testMessageInBackgroundRun { setError(it) }
+        Tests(this).testMessageInBackgroundRun()
     }
 
     private fun refreshUiOrGoToMain() {

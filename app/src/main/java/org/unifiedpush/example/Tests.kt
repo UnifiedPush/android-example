@@ -3,6 +3,7 @@ package org.unifiedpush.example
 import android.app.Activity
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import org.unifiedpush.example.utils.DelayedRequestWorker
 import java.util.Timer
 import kotlin.concurrent.schedule
 
@@ -106,7 +107,7 @@ class Tests(private val activity: Activity) {
         builder.setMessage(
             "To check, you need to put this application in the background.\n" +
                 "A notification will be sent after 5 seconds.\n\n" +
-                "Be aware that it may not work on some devices. In this case, You can send unencrypted " +
+                "It's also possible to put the application in the background and send unencrypted " +
                 "POST message to the endpoint via a terminal to test foreground services.\n\n" +
                 "Press OK to continue.",
         )
@@ -125,19 +126,10 @@ class Tests(private val activity: Activity) {
      *
      * Should be called in [Activity.onPause]
      */
-    fun testMessageInBackgroundRun(callback: (error: String?) -> Unit) {
+    fun testMessageInBackgroundRun() {
         if (runBackgroundCheck) {
             runBackgroundCheck = false
-            Timer().schedule(5_000L) {
-                ApplicationServer(activity).sendNotification(callback)
-                activity.runOnUiThread {
-                    Toast.makeText(
-                        activity,
-                        "Notification sent.",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                }
-            }
+            DelayedRequestWorker.enqueue(activity, 5_000L)
         }
     }
 
