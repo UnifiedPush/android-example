@@ -56,6 +56,7 @@ class MainActivity : WithOverlayActivity() {
         internalReceiver?.let {
             unregisterReceiver(it)
         }
+        internalReceiver = null
     }
 
     companion object {

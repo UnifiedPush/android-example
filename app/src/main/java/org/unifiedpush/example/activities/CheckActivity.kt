@@ -155,6 +155,7 @@ class CheckActivity : WithOverlayActivity() {
         internalReceiver?.let {
             unregisterReceiver(it)
         }
+        internalReceiver = null
         Tests(this).testMessageInBackgroundRun { setError(it) }
     }
 
