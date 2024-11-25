@@ -58,6 +58,7 @@ class MainActivity : ComponentActivity() {
                 goToCheckActivity(this)
                 finish()
             }
+            else -> {}
         }
     }
 

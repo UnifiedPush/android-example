@@ -30,6 +30,17 @@ object Events {
     enum class Type {
         Register,
         UpdateUi,
+        Unregister,
+        SendNotification,
+        DeepLink,
+        Reregister,
+        StopForegroundService,
+        //SetUrgency,
+        ChangeDistributor,
+        TestTopic,
+        UpdateVapidKey,
+        TestInBackground,
+        TestTTL,
     }
 
     val mutEvents: MutableSharedFlow<Type> = MutableSharedFlow()

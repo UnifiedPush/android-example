@@ -1,126 +1,53 @@
 package org.unifiedpush.example.activities
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isGone
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import kotlinx.coroutines.Job
 import org.unifiedpush.android.connector.LinkActivityHelper
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.example.ApplicationServer
-import org.unifiedpush.example.R
 import org.unifiedpush.example.TestService
 import org.unifiedpush.example.Tests
-import org.unifiedpush.example.Urgency
-import org.unifiedpush.example.activities.MainActivity.Companion.goToMainActivity
+import org.unifiedpush.example.activities.ui.CheckUi
+import org.unifiedpush.example.activities.ui.theme.AppTheme
 import org.unifiedpush.example.utils.RegistrationDialogs
 import org.unifiedpush.example.utils.TAG
-import org.unifiedpush.example.utils.registerOnRegistrationUpdate
-import org.unifiedpush.example.utils.updateRegistrationInfo
 import org.unifiedpush.example.utils.vapidImplementedForSdk
 
-class CheckActivity : WithOverlayActivity() {
-    private var internalReceiver: BroadcastReceiver? = null
+class CheckActivity : ComponentActivity()  {
+    private lateinit var appBarViewModel: AppBarViewModel
+    private lateinit var checkViewModel: CheckViewModel
     private val helper = LinkActivityHelper(this)
+    private var job : Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setContentView(R.layout.activity_check)
         super.onCreate(savedInstanceState)
+        appBarViewModel = AppBarViewModel(this)
+        checkViewModel = CheckViewModel(this)
 
-        findViewById<Button>(R.id.button_unregister).setOnClickListener { unregister() }
-        findViewById<Button>(R.id.button_notify).setOnClickListener {
-            ApplicationServer(this).sendNotification { setError(it) }
-        }
+        job = Events.registerForEvents { onEvent(it) }
 
-        setDevButtons()
-    }
-
-    /**
-     * Set buttons for developer mode.
-     */
-    private fun setDevButtons() {
-        findViewById<Button>(R.id.button_reregister).setOnClickListener {
-            reRegister()
-        }
-        findViewById<Button>(R.id.button_start_service).setOnClickListener {
-            TestService.stop(this)
-        }
-        findViewById<Button>(R.id.button_test_deep_link).setOnClickListener {
-            /**
-             * We use the [LinkActivityHelper] with [onActivityResult], but we could
-             * also use [UnifiedPush.tryUseDefaultDistributor] directly:
-             *
-             * ```
-             * UnifiedPush.tryUseDefaultDistributor(this) { success ->
-             *      Log.d(TAG, "Distributor found=$success")
-             * }
-             * ```
-             */
-            if (!helper.startLinkActivityForResult()) {
-                Log.d(TAG, "No distributor found")
+        setContent {
+            AppTheme {
+                CheckUi(appBarViewModel, checkViewModel)
             }
         }
-        findViewById<Button>(R.id.button_change_distrib).setOnClickListener {
-            RegistrationDialogs(this, mayUseCurrent = false, mayUseDefault = false).run()
-        }
-        findViewById<Button>(R.id.button_set_urgency).setOnClickListener {
-            chooseUrgencyDialog()
-        }
-        if (vapidImplementedForSdk()) {
-            findViewById<Button>(R.id.button_update_vapid).setOnClickListener {
-                ApplicationServer(this).updateVapidKey()
-                refreshUiOrGoToMain()
-            }
-        }
-        findViewById<Button>(R.id.button_test_ttl).setOnClickListener {
-            Tests(this).testTTL { setError(it) }
-        }
-        findViewById<Button>(R.id.button_test_topic).setOnClickListener {
-            Tests(this).testTopic { setError(it) }
-        }
-        findViewById<Button>(R.id.button_test_in_background).setOnClickListener {
-            Tests(this).testMessageInBackgroundStart()
-        }
-        setDevButtonsVisibility()
     }
 
-    private fun setError(error: String?) {
-        Log.d(TAG, "Error: $error")
-        findViewById<TextView>(R.id.error_text).apply {
-            text = error?.let { "Error:\n$error" } ?: ""
-            isGone = error == null
-        }
+    override fun onResume() {
+        super.onResume()
+        updateUi()
     }
 
-    /**
-     * Set visibility of dev buttons.
-     */
-    private fun setDevButtonsVisibility() {
-        val gone = !store.devMode
-        val devButtons =
-            listOf(
-                R.id.button_reregister,
-                R.id.button_start_service,
-                R.id.button_test_deep_link,
-                R.id.button_change_distrib,
-                R.id.button_set_urgency,
-                R.id.button_update_vapid,
-                R.id.button_test_topic,
-                R.id.button_test_ttl,
-                R.id.button_test_in_background,
-            )
-        devButtons.forEach {
-            findViewById<Button>(it).isGone = gone
-        }
-        findViewById<Button>(R.id.button_start_service).isEnabled = TestService.isStarted()
-        findViewById<Button>(R.id.button_set_urgency).isEnabled = !store.devCleartextTest
-        findViewById<Button>(R.id.button_test_topic).isEnabled = !store.devCleartextTest
-        findViewById<Button>(R.id.button_test_ttl).isEnabled = !store.devCleartextTest
+    override fun onDestroy() {
+        job?.cancel()
+        job = null
+        super.onDestroy()
     }
 
     /**
@@ -141,84 +68,30 @@ class CheckActivity : WithOverlayActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        internalReceiver =
-            registerOnRegistrationUpdate {
-                refreshUiOrGoToMain()
+    private fun onEvent(type: Events.Type) {
+        runOnUiThread {
+            when (type) {
+                Events.Type.UpdateUi -> updateUi()
+                Events.Type.Unregister -> unregister()
+                Events.Type.SendNotification -> sendNotification()
+                Events.Type.DeepLink -> deepLink()
+                Events.Type.Reregister -> reRegister()
+                Events.Type.StopForegroundService -> stopForegroundService()
+                Events.Type.ChangeDistributor -> changeDistributor()
+                Events.Type.TestTopic -> testTopic()
+                Events.Type.UpdateVapidKey -> updateVapidKey()
+                Events.Type.TestInBackground -> testInBackground()
+                Events.Type.TestTTL -> testTTL()
+                else -> {}
             }
-        refreshUiOrGoToMain()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        internalReceiver?.let {
-            unregisterReceiver(it)
         }
-        internalReceiver = null
-        Tests(this).testMessageInBackgroundRun()
     }
 
-    private fun refreshUiOrGoToMain() {
-        store.endpoint?.let {
-            findViewById<TextView>(R.id.text_endpoint_value).apply {
-                text =
-                    it.also {
-                        Log.d(TAG, "endpoint $it")
-                    }
-            }
-            findViewById<TextView>(R.id.text_auth_value).apply {
-                text =
-                    store.b64authSecret.also {
-                        Log.d(TAG, "auth: $it")
-                    }
-            }
-            findViewById<TextView>(R.id.text_p256dh_value).apply {
-                text =
-                    store.serializedPubKey.also {
-                        Log.d(TAG, "p256dh: $it")
-                    }
-            }
-            setVapid()
-            setDevButtons()
-        } ?: run {
-            goToMainActivity(this)
+    private fun updateUi() {
+        if (!checkViewModel.refresh(this)) {
+            MainActivity.goToMainActivity(this)
             finish()
         }
-    }
-
-    private fun setVapid() {
-        if (!vapidImplementedForSdk()) {
-            findViewById<TextView>(R.id.text_vapid_required_by_distrib).isGone = true
-            findViewById<TextView>(R.id.text_vapid_value).isGone = true
-            findViewById<Button>(R.id.button_update_vapid).isGone = true
-        } else {
-            val distUseVapid = store.distributorRequiresVapid
-            val devUseVapid = store.devMode && store.devUseVapid
-            findViewById<TextView>(R.id.text_vapid_required_by_distrib).apply {
-                isGone = !distUseVapid && !devUseVapid
-                text = if (devUseVapid) "VAPID:" else "VAPID, required by the distributor:"
-            }
-            findViewById<TextView>(R.id.text_vapid_value).apply {
-                isGone = !distUseVapid && !devUseVapid
-                text = ApplicationServer(context).getVapidHeader()
-            }
-        }
-    }
-
-    private fun chooseUrgencyDialog() {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder.setTitle("Choose urgency")
-
-        val options = Urgency.entries.map { it.value }.toTypedArray()
-        val checked = options.indexOf(store.urgency.value)
-
-        builder.setSingleChoiceItems(options, checked) { _, which ->
-            store.urgency = Urgency.fromValue(options[which])
-        }
-
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
     }
 
     private fun unregister() {
@@ -226,12 +99,60 @@ class CheckActivity : WithOverlayActivity() {
         ApplicationServer(this).storeEndpoint(null)
         UnifiedPush.unregisterApp(this)
         UnifiedPush.forceRemoveDistributor(this)
-        updateRegistrationInfo()
+        updateUi()
+    }
+
+    private fun sendNotification() {
+        ApplicationServer(this).sendNotification { checkViewModel.setError(it) }
+    }
+
+    private fun deepLink() {
+        /**
+         * We use the [LinkActivityHelper] with [onActivityResult], but we could
+         * also use [UnifiedPush.tryUseDefaultDistributor] directly:
+         *
+         * ```
+         * UnifiedPush.tryUseDefaultDistributor(this) { success ->
+         *      Log.d(TAG, "Distributor found=$success")
+         * }
+         * ```
+         */
+        if (!helper.startLinkActivityForResult()) {
+            Log.d(TAG, "No distributor found")
+        }
     }
 
     private fun reRegister() {
         RegistrationDialogs(this, mayUseCurrent = true, mayUseDefault = true).run()
         Toast.makeText(applicationContext, "Registration sent.", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun stopForegroundService() {
+        TestService.stop(this)
+        updateUi()
+    }
+
+    private fun changeDistributor() {
+        RegistrationDialogs(this, mayUseCurrent = false, mayUseDefault = false).run()
+    }
+
+    private fun testTopic() {
+        Tests(this).testTopic { checkViewModel.setError(it) }
+    }
+
+    private fun updateVapidKey() {
+        if (vapidImplementedForSdk()) {
+            ApplicationServer(this).updateVapidKey()
+            updateUi()
+        }
+    }
+
+    private fun testInBackground() {
+        Tests(this).testMessageInBackgroundStart()
+    }
+
+    private fun testTTL() {
+        Tests(this).testTTL { checkViewModel.setError(it) }
     }
 
     companion object {
