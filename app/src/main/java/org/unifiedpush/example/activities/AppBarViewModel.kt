@@ -26,6 +26,7 @@ class AppBarViewModel(
     fun toggleDevMode() {
         uiState = uiState.copy(devMode = !uiState.devMode)
         store?.devMode = uiState.devMode
+        Events.emit(Events.Type.UpdateUi)
     }
 
     fun toggleErrorIfDecryptionFail() {
@@ -36,11 +37,13 @@ class AppBarViewModel(
     fun toggleUseVapid() {
         uiState = uiState.copy(useVapid = !uiState.useVapid)
         store?.devUseVapid = uiState.useVapid
+        Events.emit(Events.Type.UpdateUi)
     }
 
     fun toggleSendClearTextTests() {
         uiState = uiState.copy(sendClearTextTests = !uiState.sendClearTextTests)
         store?.devCleartextTest = uiState.sendClearTextTests
+        Events.emit(Events.Type.UpdateUi)
     }
 
     fun toggleUseWrongVapidKeys() {
@@ -51,6 +54,7 @@ class AppBarViewModel(
     fun toggleUseWrongEncryptionKeys() {
         uiState = uiState.copy(useWrongEncryptionKeys = !uiState.useWrongEncryptionKeys)
         store?.devWrongKeysTest = uiState.useWrongEncryptionKeys
+        Events.emit(Events.Type.UpdateUi)
     }
 
     fun toggleStartForegroundServiceOnMessage() {
