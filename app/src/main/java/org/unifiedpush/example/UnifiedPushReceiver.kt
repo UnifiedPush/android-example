@@ -10,10 +10,10 @@ import org.unifiedpush.android.connector.MessagingReceiver
 import org.unifiedpush.android.connector.UnifiedPush
 import org.unifiedpush.android.connector.data.PushEndpoint
 import org.unifiedpush.android.connector.data.PushMessage
+import org.unifiedpush.example.activities.Events
 import org.unifiedpush.example.utils.Notifier
 import org.unifiedpush.example.utils.TAG
 import org.unifiedpush.example.utils.decodeMessage
-import org.unifiedpush.example.utils.updateRegistrationInfo
 import org.unifiedpush.example.utils.vapidImplementedForSdk
 
 class UnifiedPushReceiver : MessagingReceiver() {
@@ -41,7 +41,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
             notify(context, params)
             if (store.devStartForeground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 TestService.startForeground(context)
-                context.updateRegistrationInfo()
+                Events.emit(Events.Type.UpdateUi)
             }
         }
     }
@@ -69,7 +69,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
                 it.pubKey,
             )
         }
-        context.updateRegistrationInfo()
+        Events.emit(Events.Type.UpdateUi)
     }
 
     override fun onRegistrationFailed(
@@ -103,7 +103,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
     ) {
         // Remove the endpoint on the application server
         ApplicationServer(context).storeEndpoint(null)
-        context.updateRegistrationInfo()
+        Events.emit(Events.Type.UpdateUi)
         val appName = context.getString(R.string.app_name)
         Toast.makeText(context, "$appName is unregistered", Toast.LENGTH_SHORT).show()
     }

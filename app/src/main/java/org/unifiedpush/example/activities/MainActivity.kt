@@ -1,62 +1,64 @@
 package org.unifiedpush.example.activities
 
-import android.Manifest
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.widget.Button
-import androidx.activity.result.contract.ActivityResultContracts
-import org.unifiedpush.example.R
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import kotlinx.coroutines.Job
+import org.unifiedpush.example.Store
 import org.unifiedpush.example.activities.CheckActivity.Companion.goToCheckActivity
+import org.unifiedpush.example.activities.ui.MainUi
+import org.unifiedpush.example.activities.ui.theme.AppTheme
 import org.unifiedpush.example.utils.RegistrationDialogs
-import org.unifiedpush.example.utils.registerOnRegistrationUpdate
 
-class MainActivity : WithOverlayActivity() {
-    private var internalReceiver: BroadcastReceiver? = null
+class MainActivity : ComponentActivity() {
+    private lateinit var appBarViewModel: AppBarViewModel
+    private var job : Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setContentView(R.layout.activity_main)
         super.onCreate(savedInstanceState)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerForActivityResult(
-                ActivityResultContracts.RequestPermission(),
-            ) { // granted ->
-            }.launch(
-                Manifest.permission.POST_NOTIFICATIONS,
-            )
-        }
+        appBarViewModel = AppBarViewModel(this)
 
-        findViewById<Button>(R.id.register_button).setOnClickListener {
-            RegistrationDialogs(this, mayUseCurrent = true, mayUseDefault = true).run()
+        job = Events.registerForEvents { onEvent(it) }
+
+        setContent {
+            AppTheme {
+                MainUi(appBarViewModel)
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
+        val store = Store(this)
         if (store.endpoint != null) {
             goToCheckActivity(this)
             finish()
         } else {
             // We reset the value
             store.distributorRequiresVapid = false
-            internalReceiver =
-                registerOnRegistrationUpdate {
-                    if (store.endpoint != null) {
-                        goToCheckActivity(this)
-                        finish()
-                    }
-                }
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        internalReceiver?.let {
-            unregisterReceiver(it)
+    override fun onDestroy() {
+        job?.cancel()
+        job = null
+        super.onDestroy()
+    }
+
+    private fun onEvent(type: Events.Type) {
+        when (type) {
+            Events.Type.Register -> {
+                runOnUiThread {
+                    RegistrationDialogs(this, mayUseCurrent = true, mayUseDefault = true).run()
+                }
+            }
+            Events.Type.UpdateUi -> {
+                goToCheckActivity(this)
+                finish()
+            }
         }
-        internalReceiver = null
     }
 
     companion object {
