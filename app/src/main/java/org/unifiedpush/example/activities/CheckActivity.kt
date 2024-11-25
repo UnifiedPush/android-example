@@ -50,6 +50,11 @@ class CheckActivity : ComponentActivity()  {
         super.onDestroy()
     }
 
+    override fun onPause() {
+        super.onPause()
+        Tests(this).testMessageInBackgroundRun()
+    }
+
     /**
      * Receive link activity result.
      *
