@@ -84,7 +84,7 @@ fun Dropdown(
                     )
                 }
             },
-            onClick = { },
+            onClick = { viewModel.toggleDevMode() }
         )
         if (viewModel.uiState.devMode) {
             DropdownMenuItem(
@@ -100,7 +100,7 @@ fun Dropdown(
                         )
                     }
                 },
-                onClick = {}
+                onClick = { viewModel.toggleErrorIfDecryptionFail() }
             )
             DropdownMenuItem(
                 text = {
@@ -115,7 +115,7 @@ fun Dropdown(
                         )
                     }
                 },
-                onClick = {}
+                onClick = { viewModel.toggleUseVapid() }
             )
             DropdownMenuItem(
                 text = {
@@ -130,7 +130,7 @@ fun Dropdown(
                         )
                     }
                 },
-                onClick = {}
+                onClick = { viewModel.toggleSendClearTextTests() }
             )
             DropdownMenuItem(
                 enabled = viewModel.uiState.useVapid,
@@ -147,7 +147,7 @@ fun Dropdown(
                         )
                     }
                 },
-                onClick = {}
+                onClick = { viewModel.toggleUseWrongVapidKeys() }
             )
             DropdownMenuItem(
                 enabled = !viewModel.uiState.sendClearTextTests,
@@ -164,13 +164,13 @@ fun Dropdown(
                         )
                     }
                 },
-                onClick = {}
+                onClick = { viewModel.toggleUseWrongEncryptionKeys() }
             )
             DropdownMenuItem(
                 text = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            "Foreground service on message"
+                            "Fg service on message"
                         )
                         Spacer(Modifier.weight(1f))
                         Checkbox(
@@ -179,7 +179,7 @@ fun Dropdown(
                         )
                     }
                 },
-                onClick = {}
+                onClick = { viewModel.toggleStartForegroundServiceOnMessage() }
             )
         }
     }
