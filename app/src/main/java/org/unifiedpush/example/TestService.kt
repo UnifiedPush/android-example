@@ -10,7 +10,7 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
-import org.unifiedpush.example.utils.updateRegistrationInfo
+import org.unifiedpush.example.activities.Events
 import kotlin.concurrent.Volatile
 
 /**
@@ -90,7 +90,7 @@ class TestService : Service() {
                 context.startForegroundService(intent)
                 started = true
             }
-            context.updateRegistrationInfo()
+            Events.emit(Events.Type.UpdateUi)
         }
 
         /** Stop [TestService] */
@@ -100,7 +100,7 @@ class TestService : Service() {
                 context.stopService(intent)
                 started = false
             }
-            context.updateRegistrationInfo()
+            Events.emit(Events.Type.UpdateUi)
         }
 
         /** Is the foreground test service running ? */
