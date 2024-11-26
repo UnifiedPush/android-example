@@ -32,17 +32,26 @@ data class CheckUiState(
             )
         }
 
+        /**
+         * @return `null` if the application doesn't have any endpoint
+         */
         fun from(context: Context): CheckUiState? {
             val store = Store(context)
-            return CheckUiState(
+
+            /**
+             * Auth secret, p256dh and VAPID should never be used when null,
+             * we set a dummy value.
+             */
+            val endpoint = store.endpoint ?: return null
+                return CheckUiState(
                 devMode = store.devMode,
                 hasForegroundService = TestService.isStarted(),
                 sendCleartext = store.devCleartextTest,
-                endpoint = store.endpoint ?: return null,
-                auth = store.b64authSecret ?: return null,
-                p256dh = store.b64authSecret ?: return null,
+                endpoint = endpoint,
+                auth = store.b64authSecret ?: "Error",
+                p256dh = store.serializedPubKey ?: "Error",
                 showVapid = vapidImplementedForSdk() && store.devMode && store.devUseVapid,
-                vapid = store.vapidPubKey ?: return null,
+                vapid = store.vapidPubKey ?: "Error",
                 urgency = store.urgency
             )
         }

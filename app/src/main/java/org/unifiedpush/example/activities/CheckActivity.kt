@@ -162,6 +162,7 @@ class CheckActivity : ComponentActivity()  {
 
     companion object {
         fun goToCheckActivity(context: Context) {
+            Log.d(TAG, "Go to CheckActivity")
             val intent =
                 Intent(
                     context,

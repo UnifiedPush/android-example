@@ -3,6 +3,7 @@ package org.unifiedpush.example.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import kotlinx.coroutines.Job
@@ -11,6 +12,7 @@ import org.unifiedpush.example.activities.CheckActivity.Companion.goToCheckActiv
 import org.unifiedpush.example.activities.ui.MainUi
 import org.unifiedpush.example.activities.ui.theme.AppTheme
 import org.unifiedpush.example.utils.RegistrationDialogs
+import org.unifiedpush.example.utils.TAG
 
 class MainActivity : ComponentActivity() {
     private lateinit var appBarViewModel: AppBarViewModel
@@ -64,6 +66,7 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         fun goToMainActivity(context: Context) {
+            Log.d(TAG, "Go to MainActivity")
             val intent =
                 Intent(
                     context,
