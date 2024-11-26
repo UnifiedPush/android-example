@@ -22,6 +22,7 @@ android {
     defaultConfig {
         applicationId "org.unifiedpush.example"
         targetSdk 35
+        minSdk 21
         versionCode 23
         versionName "1.5.5"
         multiDexEnabled true
@@ -40,12 +41,10 @@ android {
     flavorDimensions = ["version"]
     productFlavors {
         mainFlavor {
-            minSdkVersion 16
             dimension "version"
         }
 
         fcm {
-            minSdkVersion 21
             dimension "version"
             versionNameSuffix "-fcm"
         }
@@ -81,19 +80,15 @@ dependencies {
     implementation "com.google.accompanist:accompanist-permissions:0.36.0"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    // Stick to 1.6.1, so minSdk an be 16
-    // minsdk=21 for 1.7.0
-    mainFlavorImplementation 'androidx.appcompat:appcompat:1.6.1'
+    mainFlavorImplementation 'androidx.appcompat:appcompat:1.7.0'
     fcmImplementation 'androidx.appcompat:appcompat:1.7.0'
-    // Stick to 1.11.0, so minSdk an be 16
-    // minsdk=19 for 1.12
-    mainFlavorImplementation 'com.google.android.material:material:1.11.0'
+    mainFlavorImplementation 'com.google.android.material:material:1.12.0'
     fcmImplementation 'com.google.android.material:material:1.12.0'
-    implementation 'com.google.crypto.tink:apps-webpush:1.10.0'
+    implementation 'com.google.crypto.tink:apps-webpush:1.11.0'
     implementation 'com.android.volley:volley:1.2.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
     implementation "androidx.multidex:multidex:2.0.1"
-    implementation "androidx.work:work-runtime:2.9.1"
+    implementation "androidx.work:work-runtime:2.10.0"
 
     //Flavors
     implementation connector  //delToDevMain//
