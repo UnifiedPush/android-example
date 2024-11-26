@@ -16,7 +16,6 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/Theme.UPExample"
         tools:ignore="UnusedAttribute">
-        <uses-library android:name="org.apache.http.legacy" android:required="false" />
         <activity
             android:name=".activities.MainActivity"
             android:exported="true">
@@ -31,7 +30,8 @@
         <receiver
             android:enabled="true"
             android:name=".UnifiedPushReceiver"
-            android:exported="true">
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
             <intent-filter>
                 <action android:name="org.unifiedpush.android.connector.MESSAGE"/>
                 <action android:name="org.unifiedpush.android.connector.UNREGISTERED"/>
@@ -46,7 +46,5 @@
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="This is a test service that do nothing."/>
         </service>
-
     </application>
-
 </manifest>
