@@ -328,22 +328,38 @@ class ApplicationServer(private val context: Context) {
             Log.w(TAG, "Not an instance of a PrivateKeyEntry")
             return null
         }
+        //printX509pub(entry.certificate.publicKey)
         return Signature.getInstance("SHA256withECDSA").run {
             initSign(entry.privateKey)
             update(data)
             sign()
-        }
+        }.let { EllipticCurves.ecdsaDer2Ieee(it, 64) }
     }
+
 
     private fun signWithTempKey(data: ByteArray): ByteArray? {
         val keyPair: KeyPair =
             EllipticCurves.generateKeyPair(EllipticCurves.CurveType.NIST_P256)
+        // printX509pub(keyPair.public)
+        // printX509priv(keyPair.private)
         return Signature.getInstance("SHA256withECDSA").run {
             initSign(keyPair.private)
             update(data)
             sign()
-        }
+        }.let { EllipticCurves.ecdsaDer2Ieee(it, 64) }
     }
+
+    /*
+    private fun printX509pub(pubkey: PublicKey) {
+        val b64 = Base64.encode(pubkey.encoded, Base64.DEFAULT).toString(Charsets.UTF_8)
+        Log.d(TAG, "-----BEGIN PUBLIC KEY-----\n$b64-----END PUBLIC KEY-----")
+    }
+
+    private fun printX509priv(privkey: PrivateKey) {
+        val b64 = Base64.encode(privkey.encoded, Base64.DEFAULT).toString(Charsets.UTF_8)
+        Log.d(TAG, "-----BEGIN PRIVATE KEY-----\n$b64-----END PRIVATE KEY-----")
+    }
+    */
 
     private companion object {
         private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
