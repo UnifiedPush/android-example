@@ -60,7 +60,9 @@ This application can be used to test different features of a distributor. To ena
 
 You will be able to:
 - Show an error notification if the received message hasn't been correctly decrypted, by checking `Error if decryption fails`.
-- Use VAPID. The VAPID header is cached for 5 minutes: following RFC8292, push servers should cache the JWT to avoid checking the signature every time. This allows to test it.
+- Use VAPID:
+    - After toggling this setting or after renewing VAPID key, you must "reregister" your application. This is not done automatically to allow testing different cases.
+    - The VAPID header is cached for 5 minutes: following RFC8292, push servers should cache the JWT to avoid checking the signature every time. This allows to test it.
 - Send cleartext messages
 - Use wrong VAPID keys, you should not receive new messages.
 - Use wrong encryption keys, decryption for new messages will fail.
