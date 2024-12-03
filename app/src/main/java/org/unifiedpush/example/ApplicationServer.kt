@@ -15,14 +15,6 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.crypto.tink.apps.webpush.WebPushHybridEncrypt
 import com.google.crypto.tink.subtle.EllipticCurves
-import org.json.JSONObject
-import org.unifiedpush.example.utils.RawRequest
-import org.unifiedpush.example.utils.TAG
-import org.unifiedpush.example.utils.b64decode
-import org.unifiedpush.example.utils.b64encode
-import org.unifiedpush.example.utils.decodePubKey
-import org.unifiedpush.example.utils.encode
-import org.unifiedpush.example.utils.vapidImplementedForSdk
 import java.net.URL
 import java.security.KeyPair
 import java.security.KeyPairGenerator
@@ -33,6 +25,14 @@ import java.security.Signature
 import java.security.interfaces.ECPublicKey
 import java.security.spec.ECGenParameterSpec
 import java.util.Calendar
+import org.json.JSONObject
+import org.unifiedpush.example.utils.RawRequest
+import org.unifiedpush.example.utils.TAG
+import org.unifiedpush.example.utils.b64decode
+import org.unifiedpush.example.utils.b64encode
+import org.unifiedpush.example.utils.decodePubKey
+import org.unifiedpush.example.utils.encode
+import org.unifiedpush.example.utils.vapidImplementedForSdk
 
 /**
  * This class emulates an application server
@@ -61,10 +61,7 @@ class ApplicationServer(private val context: Context) {
         }
     }
 
-    private fun callbackWithToasts(
-        e: VolleyError?,
-        callback: (error: String?) -> Unit,
-    ) {
+    private fun callbackWithToasts(e: VolleyError?, callback: (error: String?) -> Unit) {
         e?.let {
             Toast.makeText(context, "An error occurred.", Toast.LENGTH_SHORT).show()
             callback(it.toString())
@@ -107,7 +104,7 @@ class ApplicationServer(private val context: Context) {
             content = "1st notification, it must be replaced before being delivered.",
             fakeKeys = false,
             topic = "test",
-            ttl = 60,
+            ttl = 60
         ) { _, e1 ->
             e1?.let { return@sendWebPushNotification callbackWithToasts(e1, callback) }
                 ?: run {
@@ -115,7 +112,7 @@ class ApplicationServer(private val context: Context) {
                         content = "2nd notification, it must have replaced the previous one.",
                         fakeKeys = false,
                         topic = "test",
-                        ttl = 60,
+                        ttl = 60
                     ) { _, e2 ->
                         callbackWithToasts(e2, callback)
                     }
@@ -140,7 +137,7 @@ class ApplicationServer(private val context: Context) {
                     Response.Listener {
                         callback(null)
                     },
-                    Response.ErrorListener(callback),
+                    Response.ErrorListener(callback)
                 ) {
                 override fun getParams(): MutableMap<String, String> {
                     val params = mutableMapOf<String, String>()
@@ -161,7 +158,7 @@ class ApplicationServer(private val context: Context) {
         fakeKeys: Boolean,
         topic: String? = null,
         ttl: Int = 5,
-        callback: (response: NetworkResponse?, error: VolleyError?) -> Unit,
+        callback: (response: NetworkResponse?, error: VolleyError?) -> Unit
     ) {
         val requestQueue: RequestQueue = Volley.newRequestQueue(context)
         val url = Store(context).endpoint
@@ -175,7 +172,7 @@ class ApplicationServer(private val context: Context) {
                     },
                     Response.ErrorListener { e ->
                         callback(null, e)
-                    },
+                    }
                 ) {
                 override fun getBody(): ByteArray {
                     val auth =
@@ -204,7 +201,7 @@ class ApplicationServer(private val context: Context) {
                         (
                             (store.devMode && store.devUseVapid) ||
                                 store.distributorRequiresVapid
-                        )
+                            )
                     ) {
                         params["Authorization"] = getVapidHeader(fakeKeys = (store.devMode && store.devWrongVapidKeysTest))
                     }
@@ -230,10 +227,7 @@ class ApplicationServer(private val context: Context) {
     /**
      * Emulate saving the web push public keys on the application server.
      */
-    fun storeWebPushKeys(
-        auth: String,
-        p256dh: String,
-    ) {
+    fun storeWebPushKeys(auth: String, p256dh: String) {
         store.b64authSecret = auth
         store.serializedPubKey = p256dh
     }
@@ -255,10 +249,10 @@ class ApplicationServer(private val context: Context) {
         val endpoint = store.endpoint ?: return ""
         val vapidCache = vapidCache
         return if (
-            !fakeKeys
-            && vapidCache != null
-            && vapidCache.endpoint == endpoint
-            && vapidCache.date.after(Calendar.getInstance())
+            !fakeKeys &&
+            vapidCache != null &&
+            vapidCache.endpoint == endpoint &&
+            vapidCache.date.after(Calendar.getInstance())
         ) {
             vapidCache.value
         } else {
@@ -312,7 +306,7 @@ class ApplicationServer(private val context: Context) {
                 } else {
                     sign(toSign)
                 }
-            )?.b64encode() ?: ""
+                )?.b64encode() ?: ""
         val jwt = "$header.$body.$signature"
         return "vapid t=$jwt,k=${store.vapidPubKey}"
     }
@@ -330,7 +324,7 @@ class ApplicationServer(private val context: Context) {
                 .setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
                 .setDigests(KeyProperties.DIGEST_SHA256)
                 .setUserAuthenticationRequired(false)
-                .build(),
+                .build()
         )
         return generator.generateKeyPair().also {
             val pubkey = (it.public as ECPublicKey).encode()
@@ -365,14 +359,13 @@ class ApplicationServer(private val context: Context) {
             Log.w(TAG, "Not an instance of a PrivateKeyEntry")
             return null
         }
-        //printX509pub(entry.certificate.publicKey)
+        // printX509pub(entry.certificate.publicKey)
         return Signature.getInstance("SHA256withECDSA").run {
             initSign(entry.privateKey)
             update(data)
             sign()
         }.let { EllipticCurves.ecdsaDer2Ieee(it, 64) }
     }
-
 
     private fun signWithTempKey(data: ByteArray): ByteArray? {
         val keyPair: KeyPair =
@@ -396,12 +389,12 @@ class ApplicationServer(private val context: Context) {
         val b64 = Base64.encode(privkey.encoded, Base64.DEFAULT).toString(Charsets.UTF_8)
         Log.d(TAG, "-----BEGIN PRIVATE KEY-----\n$b64-----END PRIVATE KEY-----")
     }
-    */
+     */
 
     data class VapidCache(
         val endpoint: String,
         val date: Calendar,
-        val value: String,
+        val value: String
     )
 
     private companion object {

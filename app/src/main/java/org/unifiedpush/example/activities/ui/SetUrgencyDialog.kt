@@ -31,7 +31,7 @@ fun SetUrgencyDialog(urgency: Urgency = Urgency.NORMAL, onDismissRequest: () -> 
                             onClick = { onConfirmation(entry) }
                         ) {
                             Text(
-                                text = entry.value,
+                                text = entry.value
                             )
                         }
                         Spacer(Modifier.weight(1f))

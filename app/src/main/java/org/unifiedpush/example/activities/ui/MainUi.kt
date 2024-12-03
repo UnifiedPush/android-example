@@ -59,7 +59,7 @@ fun MainUiContent(innerPadding: PaddingValues) {
             onClick = {
                 Events.emit(Events.Type.Register)
             }
-        ) { 
+        ) {
             Text("Register")
         }
     }

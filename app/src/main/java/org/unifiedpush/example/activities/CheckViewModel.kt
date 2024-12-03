@@ -12,7 +12,7 @@ import org.unifiedpush.example.activities.ui.CheckUiState
 class CheckViewModel(
     uiState: CheckUiState,
     context: Context? = null
-): ViewModel() {
+) : ViewModel() {
 
     var uiState by mutableStateOf(uiState)
         private set

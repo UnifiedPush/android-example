@@ -24,7 +24,7 @@ enum class Urgency(val value: String) {
     NORMAL("normal"),
 
     /** Low battery, example: Incoming phone call or time-sensitive alert */
-    HIGH("high"), ;
+    HIGH("high") ;
 
     companion object {
         fun fromValue(s: String?): Urgency {

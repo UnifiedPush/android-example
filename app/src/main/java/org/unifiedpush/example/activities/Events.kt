@@ -35,12 +35,13 @@ object Events {
         DeepLink,
         Reregister,
         StopForegroundService,
-        //SetUrgency,
+
+        // SetUrgency,
         ChangeDistributor,
         TestTopic,
         UpdateVapidKey,
         TestInBackground,
-        TestTTL,
+        TestTTL
     }
 
     val mutEvents: MutableSharedFlow<Type> = MutableSharedFlow()

@@ -3,9 +3,9 @@ package org.unifiedpush.example
 import android.app.Activity
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import org.unifiedpush.example.utils.DelayedRequestWorker
 import java.util.Timer
 import kotlin.concurrent.schedule
+import org.unifiedpush.example.utils.DelayedRequestWorker
 
 class Tests(private val activity: Activity) {
     fun testTTL(callback: (error: String?) -> Unit) {
@@ -21,7 +21,7 @@ class Tests(private val activity: Activity) {
                             Toast.makeText(
                                 activity,
                                 "You can reconnect your distributor.",
-                                Toast.LENGTH_SHORT,
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
@@ -38,7 +38,7 @@ class Tests(private val activity: Activity) {
             "To check the TTL, you must first disconnect your distributor.\n" +
                 "You can reconnect it after 10 seconds.\n" +
                 "A notification will be sent, it should not be displayed by the application.\n\n" +
-                "Press OK once the distributor is disconnected.",
+                "Press OK once the distributor is disconnected."
         )
         builder.setPositiveButton(android.R.string.ok) { _, _ ->
             onSuccess()
@@ -60,7 +60,7 @@ class Tests(private val activity: Activity) {
                             Toast.makeText(
                                 activity,
                                 "You can reconnect your distributor.",
-                                Toast.LENGTH_SHORT,
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
@@ -78,7 +78,7 @@ class Tests(private val activity: Activity) {
                 "You can reconnect it after 10 seconds.\n" +
                 "2 notifications will be sent, only the 2nd one should be displayed by the application.\n\n" +
                 "If you see 2 notifications, your distributor doesn't support notification update.\n\n" +
-                "Press OK once the distributor is disconnected.",
+                "Press OK once the distributor is disconnected."
         )
         builder.setPositiveButton(android.R.string.ok) { _, _ ->
             onSuccess()
@@ -109,7 +109,7 @@ class Tests(private val activity: Activity) {
                 "A notification will be sent after 5 seconds.\n\n" +
                 "It's also possible to put the application in the background and send unencrypted " +
                 "POST message to the endpoint via a terminal to test foreground services.\n\n" +
-                "Press OK to continue.",
+                "Press OK to continue."
         )
         builder.setPositiveButton(android.R.string.ok) { _, _ ->
             Toast.makeText(activity, "Notification will be sent in the background", Toast.LENGTH_SHORT).show()

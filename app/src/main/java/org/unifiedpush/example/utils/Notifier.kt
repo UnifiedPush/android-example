@@ -6,8 +6,8 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import org.unifiedpush.example.R
 import java.util.concurrent.ThreadLocalRandom
+import org.unifiedpush.example.R
 
 class Notifier(var context: Context) {
     private val channelId = context.packageName
@@ -19,11 +19,7 @@ class Notifier(var context: Context) {
         }
     }
 
-    fun showNotification(
-        title: String,
-        text: String,
-        priority: Int,
-    ) {
+    fun showNotification(title: String, text: String, priority: Int) {
         val notificationBuilder =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Notification.Builder(context, channelId)

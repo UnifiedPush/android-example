@@ -16,7 +16,7 @@ import org.unifiedpush.example.utils.TAG
 
 class MainActivity : ComponentActivity() {
     private lateinit var appBarViewModel: AppBarViewModel
-    private var job : Job? = null
+    private var job: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
             val intent =
                 Intent(
                     context,
-                    MainActivity::class.java,
+                    MainActivity::class.java
                 )
             context.startActivity(intent)
         }

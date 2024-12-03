@@ -64,11 +64,7 @@ fun AppBarUi(viewModel: AppBarViewModel) {
 }
 
 @Composable
-fun Dropdown(
-    expanded: Boolean,
-    viewModel: AppBarViewModel,
-    onDismissRequest: () -> Unit
-) {
+fun Dropdown(expanded: Boolean, viewModel: AppBarViewModel, onDismissRequest: () -> Unit) {
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { onDismissRequest() }
@@ -141,8 +137,8 @@ fun Dropdown(
                         )
                         Spacer(Modifier.weight(1f))
                         Checkbox(
-                            viewModel.uiState.useVapid
-                                    && viewModel.uiState.useWrongVapidKeys,
+                            viewModel.uiState.useVapid &&
+                                viewModel.uiState.useWrongVapidKeys,
                             onCheckedChange = { viewModel.toggleUseWrongVapidKeys() }
                         )
                     }
@@ -158,8 +154,8 @@ fun Dropdown(
                         )
                         Spacer(Modifier.weight(1f))
                         Checkbox(
-                            !viewModel.uiState.sendClearTextTests
-                                    && viewModel.uiState.useWrongEncryptionKeys,
+                            !viewModel.uiState.sendClearTextTests &&
+                                viewModel.uiState.useWrongEncryptionKeys,
                             onCheckedChange = { viewModel.toggleUseWrongEncryptionKeys() }
                         )
                     }
@@ -190,15 +186,15 @@ fun Dropdown(
 fun AppBarPreview() {
     AppBarUi(
         AppBarViewModel(
-        uiState = AppBarUiState(
-            devMode = true,
-            errorIfDecryptionFail = true,
-            useVapid = true,
-            sendClearTextTests = true,
-            useWrongVapidKeys = true,
-            useWrongEncryptionKeys = true,
-            startForegroundServiceOnMessage = true
+            uiState = AppBarUiState(
+                devMode = true,
+                errorIfDecryptionFail = true,
+                useVapid = true,
+                sendClearTextTests = true,
+                useWrongVapidKeys = true,
+                useWrongEncryptionKeys = true,
+                startForegroundServiceOnMessage = true
+            )
         )
-    )
     )
 }

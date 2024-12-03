@@ -28,7 +28,7 @@ data class CheckUiState(
                 p256dh = "Error",
                 showVapid = false,
                 vapid = "Error",
-                urgency = Urgency.NORMAL,
+                urgency = Urgency.NORMAL
             )
         }
 
@@ -43,7 +43,7 @@ data class CheckUiState(
              * we set a dummy value.
              */
             val endpoint = store.endpoint ?: return null
-                return CheckUiState(
+            return CheckUiState(
                 devMode = store.devMode,
                 hasForegroundService = TestService.isStarted(),
                 sendCleartext = store.devCleartextTest,

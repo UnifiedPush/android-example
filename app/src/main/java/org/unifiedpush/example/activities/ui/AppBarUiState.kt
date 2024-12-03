@@ -12,18 +12,18 @@ data class AppBarUiState(
     val useWrongEncryptionKeys: Boolean,
     val startForegroundServiceOnMessage: Boolean
 ) {
-   companion object {
-       fun from(context: Context): AppBarUiState {
-           val store = Store(context)
-           return AppBarUiState(
-               devMode = store.devMode,
-               errorIfDecryptionFail = store.devForceEncrypted,
-               useVapid = store.devUseVapid,
-               sendClearTextTests = store.devCleartextTest,
-               useWrongVapidKeys = store.devWrongVapidKeysTest,
-               useWrongEncryptionKeys = store.devWrongKeysTest,
-               startForegroundServiceOnMessage = store.devStartForeground
-           )
-       }
-   }
+    companion object {
+        fun from(context: Context): AppBarUiState {
+            val store = Store(context)
+            return AppBarUiState(
+                devMode = store.devMode,
+                errorIfDecryptionFail = store.devForceEncrypted,
+                useVapid = store.devUseVapid,
+                sendClearTextTests = store.devCleartextTest,
+                useWrongVapidKeys = store.devWrongVapidKeysTest,
+                useWrongEncryptionKeys = store.devWrongKeysTest,
+                startForegroundServiceOnMessage = store.devStartForeground
+            )
+        }
+    }
 }

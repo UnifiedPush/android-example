@@ -19,11 +19,11 @@ import org.unifiedpush.example.utils.RegistrationDialogs
 import org.unifiedpush.example.utils.TAG
 import org.unifiedpush.example.utils.vapidImplementedForSdk
 
-class CheckActivity : ComponentActivity()  {
+class CheckActivity : ComponentActivity() {
     private lateinit var appBarViewModel: AppBarViewModel
     private lateinit var checkViewModel: CheckViewModel
     private val helper = LinkActivityHelper(this)
-    private var job : Job? = null
+    private var job: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,11 +60,7 @@ class CheckActivity : ComponentActivity()  {
      *
      * If the link succeed, we register our app.
      */
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-    ) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val success = helper.onLinkActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "Distributor found=$success")
@@ -166,7 +162,7 @@ class CheckActivity : ComponentActivity()  {
             val intent =
                 Intent(
                     context,
-                    CheckActivity::class.java,
+                    CheckActivity::class.java
                 )
             context.startActivity(intent)
         }

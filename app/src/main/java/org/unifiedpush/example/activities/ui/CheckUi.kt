@@ -27,10 +27,7 @@ import org.unifiedpush.example.activities.CheckViewModel
 import org.unifiedpush.example.activities.Events
 
 @Composable
-fun CheckUi(
-    appBarViewModel: AppBarViewModel,
-    viewModel: CheckViewModel
-) {
+fun CheckUi(appBarViewModel: AppBarViewModel, viewModel: CheckViewModel) {
     Scaffold(
         topBar = { AppBarUi(appBarViewModel) }
     ) { innerPadding ->
@@ -39,10 +36,7 @@ fun CheckUi(
 }
 
 @Composable
-fun CheckUiContent(
-    innerPadding: PaddingValues,
-    viewModel: CheckViewModel
-) {
+fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
     var showUrgencyDialog by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -121,8 +115,8 @@ fun CheckUiContent(
                 listOf(
                     {
                         Button(
-                            onClick
-                            = {
+                            onClick =
+                            {
                                 Events.emit(Events.Type.Reregister)
                             }
                         ) {
@@ -221,7 +215,6 @@ fun CheckUiContent(
                 }
             )
         }
-
     }
 }
 
@@ -243,20 +236,23 @@ fun TwoColumns(list: List<@Composable () -> Unit>) {
 @Preview
 @Composable
 fun CheckUiPreview() {
-    CheckUiContent(PaddingValues(0.dp), CheckViewModel(
-        CheckUiState(
-            error = "error!",
-            devMode = true,
-            hasForegroundService = false,
-            sendCleartext = true,
-            endpoint = "https://my.endpoint.tld",
-            auth = "Auth_random",
-            p256dh = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+    CheckUiContent(
+        PaddingValues(0.dp),
+        CheckViewModel(
+            CheckUiState(
+                error = "error!",
+                devMode = true,
+                hasForegroundService = false,
+                sendCleartext = true,
+                endpoint = "https://my.endpoint.tld",
+                auth = "Auth_random",
+                p256dh = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
                     "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-            showVapid = true,
-            vapid = "vapid t=eyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-            urgency = Urgency.NORMAL
+                showVapid = true,
+                vapid = "vapid t=eyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                urgency = Urgency.NORMAL
+            )
+        )
     )
-    ))
 }

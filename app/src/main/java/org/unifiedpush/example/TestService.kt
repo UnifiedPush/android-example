@@ -10,8 +10,8 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
-import org.unifiedpush.example.activities.Events
 import kotlin.concurrent.Volatile
+import org.unifiedpush.example.activities.Events
 
 /**
  * Service to test [foreground services](https://developer.android.com/develop/background-work/services/foreground-services) started from the background.
@@ -48,7 +48,7 @@ class TestService : Service() {
                 NotificationChannel(
                     CHANNEL_ID,
                     "TestService",
-                    NotificationManager.IMPORTANCE_HIGH,
+                    NotificationManager.IMPORTANCE_HIGH
                 ).let {
                     it.description = "test"
                     it
@@ -62,7 +62,7 @@ class TestService : Service() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Notification.Builder(
                     this,
-                    CHANNEL_ID,
+                    CHANNEL_ID
                 )
             } else {
                 Notification.Builder(this)
@@ -104,10 +104,9 @@ class TestService : Service() {
         }
 
         /** Is the foreground test service running ? */
-        fun isStarted(): Boolean =
-            synchronized(lock) {
-                started
-            }
+        fun isStarted(): Boolean = synchronized(lock) {
+            started
+        }
 
         @Volatile
         private var started = false

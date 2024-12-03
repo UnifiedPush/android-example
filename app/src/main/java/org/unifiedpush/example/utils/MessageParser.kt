@@ -37,11 +37,11 @@ internal fun decodeMessage(message: String): Map<String, String> {
 private fun notDecodedMap(message: String): Map<String, String> {
     return if (message.all { it.isDefined() && !it.isISOControl() }) {
         mapOf(
-            "message" to message,
+            "message" to message
         )
     } else {
         mapOf(
-            "message" to COULD_NOT_DECRYPT,
+            "message" to COULD_NOT_DECRYPT
         )
     }
 }

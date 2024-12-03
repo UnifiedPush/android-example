@@ -7,13 +7,13 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import org.unifiedpush.example.ApplicationServer
 import java.util.concurrent.TimeUnit
+import org.unifiedpush.example.ApplicationServer
 
 class DelayedRequestWorker(context: Context, workerParams: WorkerParameters) :
     Worker(
         context,
-        workerParams,
+        workerParams
     ) {
     override fun doWork(): Result {
         val tag = DelayedRequestWorker::class.java.simpleName
@@ -26,10 +26,7 @@ class DelayedRequestWorker(context: Context, workerParams: WorkerParameters) :
     }
 
     companion object {
-        fun enqueue(
-            context: Context,
-            delayMs: Long,
-        ) {
+        fun enqueue(context: Context, delayMs: Long) {
             val worker =
                 OneTimeWorkRequest.Builder(DelayedRequestWorker::class.java).apply {
                     setInitialDelay(delayMs, TimeUnit.MILLISECONDS)

@@ -18,7 +18,7 @@ open class RawRequest(
     method: Int,
     url: String?,
     @field:GuardedBy("mLock") private var mListener: Response.Listener<NetworkResponse>?,
-    errorListener: Response.ErrorListener?,
+    errorListener: Response.ErrorListener?
 ) :
     Request<NetworkResponse>(method, url, errorListener) {
     /** Lock to guard mListener as it is cleared on cancel() and read on delivery.  */
@@ -34,12 +34,12 @@ open class RawRequest(
     constructor(
         url: String?,
         listener: Response.Listener<NetworkResponse>?,
-        errorListener: Response.ErrorListener?,
+        errorListener: Response.ErrorListener?
     ) : this(
         Method.GET,
         url,
         listener,
-        errorListener,
+        errorListener
     )
 
     override fun cancel() {

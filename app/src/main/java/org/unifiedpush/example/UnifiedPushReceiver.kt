@@ -17,11 +17,7 @@ import org.unifiedpush.example.utils.decodeMessage
 import org.unifiedpush.example.utils.vapidImplementedForSdk
 
 class UnifiedPushReceiver : MessagingReceiver() {
-    override fun onMessage(
-        context: Context,
-        message: PushMessage,
-        instance: String,
-    ) {
+    override fun onMessage(context: Context, message: PushMessage, instance: String) {
         val store = Store(context)
         if (!store.devMode) {
             val params = decodeMessage(message.content.toString(Charsets.UTF_8))
@@ -33,7 +29,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
                     mapOf(
                         "title" to "Error",
                         "message" to "Couldn't decrypt message.",
-                        "priority" to "8",
+                        "priority" to "8"
                     )
                 } else {
                     decodeMessage(message.content.toString(Charsets.UTF_8))
@@ -46,37 +42,26 @@ class UnifiedPushReceiver : MessagingReceiver() {
         }
     }
 
-    private fun notify(
-        context: Context,
-        params: Map<String, String>,
-    ) {
+    private fun notify(context: Context, params: Map<String, String>) {
         val text = params["message"] ?: "Internal error"
         val priority = params["priority"]?.toInt() ?: 8
         val title = params["title"] ?: context.getString(R.string.app_name)
         Notifier(context).showNotification(title, text, priority)
     }
 
-    override fun onNewEndpoint(
-        context: Context,
-        endpoint: PushEndpoint,
-        instance: String,
-    ) {
+    override fun onNewEndpoint(context: Context, endpoint: PushEndpoint, instance: String) {
         Log.d(TAG, "New Endpoint: $endpoint")
         ApplicationServer(context).storeEndpoint(endpoint.url)
         endpoint.pubKeySet?.let {
             ApplicationServer(context).storeWebPushKeys(
                 it.auth,
-                it.pubKey,
+                it.pubKey
             )
         }
         Events.emit(Events.Type.UpdateUi)
     }
 
-    override fun onRegistrationFailed(
-        context: Context,
-        reason: FailedReason,
-        instance: String,
-    ) {
+    override fun onRegistrationFailed(context: Context, reason: FailedReason, instance: String) {
         Toast.makeText(context, "Registration Failed: $reason", Toast.LENGTH_SHORT).show()
         if (reason == FailedReason.VAPID_REQUIRED) {
             if (vapidImplementedForSdk()) {
@@ -88,7 +73,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
                 Toast.makeText(
                     context,
                     "Distributor requires VAPID but it isn't implemented for old Android versions.",
-                    Toast.LENGTH_SHORT,
+                    Toast.LENGTH_SHORT
                 ).show()
                 UnifiedPush.forceRemoveDistributor(context)
             }
@@ -97,10 +82,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
         }
     }
 
-    override fun onUnregistered(
-        context: Context,
-        instance: String,
-    ) {
+    override fun onUnregistered(context: Context, instance: String) {
         // Remove the endpoint on the application server
         ApplicationServer(context).storeEndpoint(null)
         Events.emit(Events.Type.UpdateUi)
@@ -113,10 +95,7 @@ class UnifiedPushReceiver : MessagingReceiver() {
      *
      * You don't need to do this.
      */
-    override fun onReceive(
-        context: Context,
-        intent: Intent,
-    ) {
+    override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "event received")
         super.onReceive(context, intent)
     }

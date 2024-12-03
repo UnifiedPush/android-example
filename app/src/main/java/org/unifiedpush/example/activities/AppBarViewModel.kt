@@ -11,7 +11,7 @@ import org.unifiedpush.example.activities.ui.AppBarUiState
 class AppBarViewModel(
     uiState: AppBarUiState,
     context: Context? = null
-): ViewModel() {
+) : ViewModel() {
 
     var uiState by mutableStateOf(uiState)
         private set
