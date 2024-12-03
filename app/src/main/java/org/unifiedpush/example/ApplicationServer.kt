@@ -32,6 +32,7 @@ import java.security.SecureRandom
 import java.security.Signature
 import java.security.interfaces.ECPublicKey
 import java.security.spec.ECGenParameterSpec
+import java.util.Calendar
 
 /**
  * This class emulates an application server
@@ -238,7 +239,12 @@ class ApplicationServer(private val context: Context) {
     }
 
     /**
-     * Generate VAPID header for the endpoint, valid for 12h
+     * Get the VAPID header for the endpoint, from cache or generate a new one
+     *
+     * - The header is cached for 5 minutes: following RFC8292, push servers should
+     * cache the JWT to avoid checking the signature every time. This allows to test
+     * it.
+     * - The header is valid for 12h to allow manually testing the server from CLI
      *
      * This is for the `Authorization` header.
      *
@@ -246,7 +252,38 @@ class ApplicationServer(private val context: Context) {
      */
     @RequiresApi(Build.VERSION_CODES.M)
     fun getVapidHeader(fakeKeys: Boolean = false): String {
-        val endpointStr = store.endpoint ?: return ""
+        val endpoint = store.endpoint ?: return ""
+        val vapidCache = vapidCache
+        return if (
+            !fakeKeys
+            && vapidCache != null
+            && vapidCache.endpoint == endpoint
+            && vapidCache.date.after(Calendar.getInstance())
+        ) {
+            vapidCache.value
+        } else {
+            genVapidHeader(endpoint, fakeKeys).also { vapid ->
+                if (!fakeKeys) {
+                    Log.d(TAG, "Caching VAPID header: $vapid")
+                    ApplicationServer.vapidCache = VapidCache(
+                        endpoint = endpoint,
+                        date = Calendar.getInstance().apply { add(Calendar.MINUTE, 5) },
+                        value = vapid
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Generate VAPID header for the endpoint, valid for 12h
+     *
+     * This is for the `Authorization` header.
+     *
+     * @return [String] "vapid t=$JWT,k=$PUBKEY"
+     */
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun genVapidHeader(endpointStr: String, fakeKeys: Boolean = false): String {
         val header =
             JSONObject()
                 .put("alg", "ES256")
@@ -361,8 +398,15 @@ class ApplicationServer(private val context: Context) {
     }
     */
 
+    data class VapidCache(
+        val endpoint: String,
+        val date: Calendar,
+        val value: String,
+    )
+
     private companion object {
         private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
         private const val ALIAS = "ApplicationServer"
+        private var vapidCache: VapidCache? = null
     }
 }
