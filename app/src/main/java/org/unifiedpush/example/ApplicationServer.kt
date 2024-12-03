@@ -254,7 +254,7 @@ class ApplicationServer(private val context: Context) {
                 .toString().toByteArray(Charsets.UTF_8)
                 .b64encode()
         val endpoint = URL(endpointStr)
-        val time12h = ((System.currentTimeMillis() / 1000) + 43200).toString() // +12h
+        val time12h = ((System.currentTimeMillis() / 1000) + 43200) // +12h
 
         /**
          * [org.json.JSONStringer#string] Doesn't follow RFC, '/' = 0x2F doesn't have to be escaped
