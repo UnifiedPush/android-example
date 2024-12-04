@@ -65,7 +65,7 @@ class CheckActivity : ComponentActivity() {
         val success = helper.onLinkActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "Distributor found=$success")
         if (success) {
-            UnifiedPush.registerApp(this)
+            UnifiedPush.register(this)
         }
     }
 
@@ -98,8 +98,8 @@ class CheckActivity : ComponentActivity() {
     private fun unregister() {
         Toast.makeText(this, "Unregistering", Toast.LENGTH_SHORT).show()
         ApplicationServer(this).storeEndpoint(null)
-        UnifiedPush.unregisterApp(this)
-        UnifiedPush.forceRemoveDistributor(this)
+        UnifiedPush.unregister(this)
+        UnifiedPush.removeDistributor(this)
         updateUi()
     }
 

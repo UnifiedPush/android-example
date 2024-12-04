@@ -68,17 +68,17 @@ class UnifiedPushReceiver : MessagingReceiver() {
                 val store = Store(context)
                 store.distributorRequiresVapid = true
                 ApplicationServer(context).genVapidKey()
-                UnifiedPush.registerApp(context, instance, vapid = store.vapidPubKey)
+                UnifiedPush.register(context, instance, vapid = store.vapidPubKey)
             } else {
                 Toast.makeText(
                     context,
                     "Distributor requires VAPID but it isn't implemented for old Android versions.",
                     Toast.LENGTH_SHORT
                 ).show()
-                UnifiedPush.forceRemoveDistributor(context)
+                UnifiedPush.removeDistributor(context)
             }
         } else {
-            UnifiedPush.forceRemoveDistributor(context)
+            UnifiedPush.removeDistributor(context)
         }
     }
 
