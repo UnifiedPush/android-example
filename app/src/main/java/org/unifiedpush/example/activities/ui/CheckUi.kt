@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -55,7 +56,7 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                 style = MaterialTheme.typography.labelMedium,
                 text = "Endpoint"
             )
-            Text(viewModel.uiState.endpoint)
+            SelectionContainer { Text(viewModel.uiState.endpoint) }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -63,7 +64,7 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                 style = MaterialTheme.typography.labelMedium,
                 text = "Auth"
             )
-            Text(viewModel.uiState.auth)
+            SelectionContainer { Text(viewModel.uiState.auth) }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -71,7 +72,7 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                 style = MaterialTheme.typography.labelMedium,
                 text = "P256dh"
             )
-            Text(viewModel.uiState.p256dh)
+            SelectionContainer { Text(viewModel.uiState.p256dh) }
         }
 
         if (viewModel.uiState.showVapid) {
@@ -80,7 +81,7 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                     style = MaterialTheme.typography.labelMedium,
                     text = "VAPID"
                 )
-                Text(viewModel.uiState.vapid)
+                SelectionContainer { Text(viewModel.uiState.vapid) }
             }
         }
 
