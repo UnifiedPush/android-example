@@ -106,7 +106,7 @@ class Tests(private val activity: Activity) {
         builder.setTitle("Testing notifications in background")
         builder.setMessage(
             "To check, you need to put this application in the background.\n" +
-                "A notification will be sent after 5 seconds.\n\n" +
+                "A notification will be sent after 7 seconds.\n\n" +
                 "It's also possible to put the application in the background and send unencrypted " +
                 "POST message to the endpoint via a terminal to test foreground services.\n\n" +
                 "Press OK to continue."
@@ -129,7 +129,7 @@ class Tests(private val activity: Activity) {
     fun testMessageInBackgroundRun() {
         if (runBackgroundCheck) {
             runBackgroundCheck = false
-            DelayedRequestWorker.enqueue(activity, 5_000L)
+            DelayedRequestWorker.enqueue(activity, 7_000L)
         }
     }
 
