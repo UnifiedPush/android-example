@@ -17,6 +17,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 fun PermissionsUi(onDone: () -> Unit = {}) {
     if (Build.VERSION.SDK_INT < 33) {
         onDone()
+        return
     }
     val notificationsPermissionState =
         rememberPermissionState(
