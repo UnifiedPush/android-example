@@ -27,18 +27,12 @@
         <activity
             android:name=".activities.CheckActivity"
             android:exported="false" />
-        <receiver
-            android:enabled="true"
-            android:name=".UnifiedPushReceiver"
-            android:exported="true"
-            tools:ignore="ExportedReceiver">
+        <service android:name="org.unifiedpush.example.PushServiceImpl"
+            android:exported="false">
             <intent-filter>
-                <action android:name="org.unifiedpush.android.connector.MESSAGE"/>
-                <action android:name="org.unifiedpush.android.connector.UNREGISTERED"/>
-                <action android:name="org.unifiedpush.android.connector.NEW_ENDPOINT"/>
-                <action android:name="org.unifiedpush.android.connector.REGISTRATION_FAILED"/>
+                <action android:name="org.unifiedpush.android.connector.PUSH_EVENT"/>
             </intent-filter>
-        </receiver>
+        </service>
         <service
             android:name=".TestService"
             android:enabled="true"
