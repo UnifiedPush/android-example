@@ -25,7 +25,7 @@ class RegistrationDialogs(
             return UnifiedPush.getDistributors(context)
         }
 
-        override fun registerApp(instance: String) {
+        override fun register(instance: String) {
             val store = Store(context)
             val vapid = if (store.devMode && store.devUseVapid) store.vapidPubKey else null
             UnifiedPush.register(context, instance, vapid = vapid)
