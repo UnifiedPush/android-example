@@ -1,0 +1,3 @@
+- Follow new specifications
+- Add tools to develop a distributor
+- New Ui
