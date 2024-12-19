@@ -2,21 +2,69 @@ package org.unifiedpush.example
 
 import android.content.Context
 import org.unifiedpush.android.connector.UnifiedPush
-import org.unifiedpush.example.utils.SerializedKeyPair
-import org.unifiedpush.example.utils.WebPush
-import java.security.KeyPair
 
 private const val PREF_MASTER = "org.unifiedpush.example::store"
+private const val PREF_DEV_MODE = "org.unifiedpush.example::store::devMode"
+private const val PREF_DEV_FOREGROUND_SERVICE = "org.unifiedpush.example::store::dev::foregroundService"
+private const val PREF_DEV_CLEARTEXT_TEST = "org.unifiedpush.example::store::dev::cleartextTest"
+private const val PREF_DEV_WRONG_KEYS_TEST = "org.unifiedpush.example::store::dev::wrongKeysTest"
+private const val PREF_DEV_WRONG_VAPID_KEYS = "org.unifiedpush.example::store::dev::wrongVapidKeysTest"
+private const val PREF_DEV_FORCE_ENCRYPTED = "org.unifiedpush.example::store::dev::forceEncrypted"
+private const val PREF_DEV_USE_VAPID = "org.unifiedpush.example::store::dev::useVapid"
 private const val PREF_ENDPOINT = "org.unifiedpush.example::store::endpoint"
-private const val PREF_FEATURE_BYTE_MESSAGE = "org.unifiedpush.example::store::feature_byte_message"
-private const val PREF_WEBPUSH = "org.unifiedpush.example::store::webpush"
+private const val PREF_URGENCY = "org.unifiedpush.example::store::urgency"
 private const val PREF_PUBKEY = "org.unifiedpush.example::store::pubkey"
-private const val PREF_PRIVKEY = "org.unifiedpush.example::store::privkey"
 private const val PREF_AUTHKEY = "org.unifiedpush.example::store::authkey"
+private const val PREF_DISTRIB_REQ_VAPID = "org.unifiedpush.example::store::distribRequiresVapid"
+private const val PREF_VAPID_PUBKEY = "org.unifiedpush.example::store::vapidPubKey"
 
+/**
+ * Class containing stored parameters and values.
+ */
 class Store(val context: Context) {
     private val prefs = context.getSharedPreferences(PREF_MASTER, Context.MODE_PRIVATE)
 
+    /** Is Developer mode enabled. */
+    var devMode: Boolean
+        get() = prefs.getBoolean(PREF_DEV_MODE, false)
+        set(value) = prefs.edit().putBoolean(PREF_DEV_MODE, value).apply()
+
+    /** For developer mode: Start foreground service when a push message is received. */
+    var devStartForeground: Boolean
+        get() = prefs.getBoolean(PREF_DEV_FOREGROUND_SERVICE, false)
+        set(value) = prefs.edit().putBoolean(PREF_DEV_FOREGROUND_SERVICE, value).apply()
+
+    /** For developer mode: Send unencrypted push messages. */
+    var devCleartextTest: Boolean
+        get() = prefs.getBoolean(PREF_DEV_CLEARTEXT_TEST, false)
+        set(value) = prefs.edit().putBoolean(PREF_DEV_CLEARTEXT_TEST, value).apply()
+
+    /** For developer mode: Use wrong encryption key to send push messages. */
+    var devWrongKeysTest: Boolean
+        get() = prefs.getBoolean(PREF_DEV_WRONG_KEYS_TEST, false)
+        set(value) = prefs.edit().putBoolean(PREF_DEV_WRONG_KEYS_TEST, value).apply()
+
+    /** For developer mode: Use wrong VAPID key with push messages.*/
+    var devWrongVapidKeysTest: Boolean
+        get() = prefs.getBoolean(PREF_DEV_WRONG_VAPID_KEYS, false)
+        set(value) = prefs.edit().putBoolean(PREF_DEV_WRONG_VAPID_KEYS, value).apply()
+
+    /**
+     * For developer mode: Show an error notification when receiving an unencrypted push message.
+     *
+     * When [PushMessage.decrypted][org.unifiedpush.android.connector.data.PushMessage.decrypted]
+     * is false.
+     */
+    var devForceEncrypted: Boolean
+        get() = prefs.getBoolean(PREF_DEV_FORCE_ENCRYPTED, false)
+        set(value) = prefs.edit().putBoolean(PREF_DEV_FORCE_ENCRYPTED, value).apply()
+
+    /** For developer mode: Use VAPID even if the distributor doesn't require it. */
+    var devUseVapid: Boolean
+        get() = prefs.getBoolean(PREF_DEV_USE_VAPID, false)
+        set(value) = prefs.edit().putBoolean(PREF_DEV_USE_VAPID, value).apply()
+
+    /** Push endpoint. Should be saved on application server. */
     var endpoint: String?
         get() = UnifiedPush.getAckDistributor(context)?.let { prefs.getString(PREF_ENDPOINT, null) }
         set(value) {
@@ -27,51 +75,28 @@ class Store(val context: Context) {
             }
         }
 
-    var featureByteMessage: Boolean
-        get() = prefs.getBoolean(PREF_FEATURE_BYTE_MESSAGE, false)
-        set(value) = prefs.edit().putBoolean(PREF_FEATURE_BYTE_MESSAGE, value).apply()
+    /** For developer mode: Urgency for push messages. Should be chosen by the application server.  */
+    var urgency: Urgency
+        get() = Urgency.fromValue(prefs.getString(PREF_URGENCY, null))
+        set(value) = prefs.edit().putString(PREF_URGENCY, value.value).apply()
 
-    var webpush: Boolean
-        get() = prefs.getBoolean(PREF_WEBPUSH, false)
-        set(value) = prefs.edit().putBoolean(PREF_WEBPUSH, value).apply()
+    /** WebPush public key. Should be saved on application server. */
+    var serializedPubKey: String?
+        get() = prefs.getString(PREF_PUBKEY, null)
+        set(value) = prefs.edit().putString(PREF_PUBKEY, value).apply()
 
-    var keyPair: KeyPair
-        get() {
-            val publicKey = prefs.getString(PREF_PUBKEY, null)
-            val privateKey = prefs.getString(PREF_PRIVKEY, null)
-            return if (publicKey.isNullOrBlank() || privateKey.isNullOrBlank()) {
-                val kp = WebPush.generateKeyPair()
-                keyPair = kp
-                kp
-            } else {
-                WebPush.decodeKeyPair(
-                    SerializedKeyPair(
-                        privateKey,
-                        publicKey,
-                    ),
-                )
-            }
-        }
-        set(value) {
-            WebPush.encodeKeyPair(value).let {
-                prefs.edit().putString(PREF_PUBKEY, it.public).apply()
-                prefs.edit().putString(PREF_PRIVKEY, it.private).apply()
-            }
-        }
+    /** Does the distributor requires VAPID ? It should always be used if the application server supports it. */
+    var distributorRequiresVapid: Boolean
+        get() = prefs.getBoolean(PREF_DISTRIB_REQ_VAPID, false)
+        set(value) = prefs.edit().putBoolean(PREF_DISTRIB_REQ_VAPID, value).apply()
 
-    val serializedPubKey: String?
-        get() = prefs.getString(PREF_PUBKEY, null)?.let { WebPush.serializePublicKey(WebPush.decodePubKey(it)) }
+    /** VAPID public key. Should be saved on application server. */
+    var vapidPubKey: String?
+        get() = prefs.getString(PREF_VAPID_PUBKEY, null)
+        set(value) = prefs.edit().putString(PREF_VAPID_PUBKEY, value).apply()
 
-    var authSecret: ByteArray
-        get() =
-            prefs.getString(PREF_AUTHKEY, null)?.let {
-                WebPush.b64decode(it)
-            }
-                ?: WebPush.generateAuthSecret().apply {
-                    authSecret = this
-                }
-        set(value) = prefs.edit().putString(PREF_AUTHKEY, WebPush.b64encode(value)).apply()
-
-    val b64authSecret: String?
+    /** WebPush auth secret. Should be saved on application server. */
+    var b64authSecret: String?
         get() = prefs.getString(PREF_AUTHKEY, null)
+        set(value) = prefs.edit().putString(PREF_AUTHKEY, value).apply()
 }

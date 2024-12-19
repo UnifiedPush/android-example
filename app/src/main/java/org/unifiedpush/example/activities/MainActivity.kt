@@ -1,175 +1,76 @@
 package org.unifiedpush.example.activities
 
-import android.Manifest
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.widget.Button
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import org.unifiedpush.android.connector.UnifiedPush
-import org.unifiedpush.android.connector.UnifiedPush.FEATURE_BYTES_MESSAGE
-import org.unifiedpush.android.connector.ui.SelectDistributorDialogBuilder
-import org.unifiedpush.android.connector.ui.UnifiedPushFunctions
-import org.unifiedpush.example.R
+import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import kotlinx.coroutines.Job
 import org.unifiedpush.example.Store
 import org.unifiedpush.example.activities.CheckActivity.Companion.goToCheckActivity
-import org.unifiedpush.example.utils.registerOnRegistrationUpdate
+import org.unifiedpush.example.activities.ui.MainUi
+import org.unifiedpush.example.activities.ui.theme.AppTheme
+import org.unifiedpush.example.utils.RegistrationDialogs
+import org.unifiedpush.example.utils.TAG
 
-// This is an example to ignore noDistributorFound
-// To use it, uncomment and replace SelectDistributorDialogBuilder
-// with MySelectorBuilder
-// in the MainActivity
-
-/*
-class MySelectorBuilder(context: Context, instances: List<String>,
-               unifiedPushFunctions: UnifiedPushFunctions
-): SelectDistributorDialogBuilder(context,
-    instances, unifiedPushFunctions
-) {
-    override fun onNoDistributorFound() {
-        // DO NOTHING
-    }
-}
-*/
-
-class MainActivity : AppCompatActivity() {
-    private lateinit var store: Store
-    private var internalReceiver: BroadcastReceiver? = null
+class MainActivity : ComponentActivity() {
+    private lateinit var appBarViewModel: AppBarViewModel
+    private var job: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        appBarViewModel = AppBarViewModel(this)
 
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
-        findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        job = Events.registerForEvents { onEvent(it) }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerForActivityResult(
-                ActivityResultContracts.RequestPermission(),
-            ) { // granted ->
-            }.launch(
-                Manifest.permission.POST_NOTIFICATIONS,
-            )
-        }
-
-        store = Store(this)
-        findViewById<Button>(R.id.register_button).setOnClickListener {
-            val features = arrayListOf<String>()
-            if (store.featureByteMessage) {
-                features.add(FEATURE_BYTES_MESSAGE)
+        setContent {
+            AppTheme {
+                MainUi(appBarViewModel)
             }
-            // MySelectorBuilder(
-            SelectDistributorDialogBuilder(
-                this,
-                listOf("default"),
-                object : UnifiedPushFunctions {
-                    override fun getAckDistributor(): String? = UnifiedPush.getAckDistributor(this@MainActivity)
-
-                    override fun getDistributors(): List<String> = UnifiedPush.getDistributors(this@MainActivity, features)
-
-                    override fun registerApp(instance: String) = UnifiedPush.registerApp(this@MainActivity, instance, features)
-
-                    override fun saveDistributor(distributor: String) = UnifiedPush.saveDistributor(this@MainActivity, distributor)
-                },
-            ).show()
         }
     }
 
     override fun onResume() {
         super.onResume()
+        val store = Store(this)
         if (store.endpoint != null) {
             goToCheckActivity(this)
             finish()
         } else {
-            internalReceiver =
-                registerOnRegistrationUpdate {
-                    if (store.endpoint != null) {
-                        goToCheckActivity(this)
-                        finish()
-                    }
+            // We reset the value
+            store.distributorRequiresVapid = false
+        }
+    }
+
+    override fun onDestroy() {
+        job?.cancel()
+        job = null
+        super.onDestroy()
+    }
+
+    private fun onEvent(type: Events.Type) {
+        when (type) {
+            Events.Type.Register -> {
+                runOnUiThread {
+                    RegistrationDialogs(this, mayUseCurrent = true, mayUseDefault = true).run()
                 }
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        internalReceiver?.let {
-            unregisterReceiver(it)
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Keep the overlay menu open after an item is selected
-        when (item.itemId) {
-            R.id.action_feature_byte_message,
-            R.id.action_webpush,
-            -> {
-                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
-                item.actionView = View(this)
-                item.setOnActionExpandListener(
-                    object : MenuItem.OnActionExpandListener {
-                        override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                            return false
-                        }
-
-                        override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                            return false
-                        }
-                    },
-                )
-                return false
             }
-            else -> {
-                return true
+            Events.Type.UpdateUi -> {
+                goToCheckActivity(this)
+                finish()
             }
+            else -> {}
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.overlay_main, menu)
-        menu?.findItem(R.id.action_feature_byte_message)?.apply {
-            isChecked = store.featureByteMessage
-            isEnabled = !store.webpush
-            setOnMenuItemClickListener {
-                val check = !it.isChecked
-                it.isChecked = check
-                store.featureByteMessage = check
-                false
-            }
-        }
-        menu?.findItem(R.id.action_webpush)?.apply {
-            isChecked = store.webpush
-            setOnMenuItemClickListener {
-                val check = !it.isChecked
-                it.isChecked = check
-                menu.findItem(R.id.action_feature_byte_message)?.apply {
-                    isChecked = check
-                    isEnabled = !check
-                }
-                store.webpush = check
-                store.featureByteMessage = check
-                // gen authSecret and keyPair
-                store.authSecret
-                store.keyPair
-                false
-            }
-        }
-
-        return super.onCreateOptionsMenu(menu)
     }
 
     companion object {
         fun goToMainActivity(context: Context) {
+            Log.d(TAG, "Go to MainActivity")
             val intent =
                 Intent(
                     context,
-                    MainActivity::class.java,
+                    MainActivity::class.java
                 )
             context.startActivity(intent)
         }

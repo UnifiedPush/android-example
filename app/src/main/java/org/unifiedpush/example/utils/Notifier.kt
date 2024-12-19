@@ -5,25 +5,21 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import org.unifiedpush.example.R
+import androidx.annotation.RequiresApi
 import java.util.concurrent.ThreadLocalRandom
+import org.unifiedpush.example.R
 
 class Notifier(var context: Context) {
-    /** For showing and hiding our notification.  */
-    private var gNM: NotificationManager? = null
-    private var channelId = "UP-example-ID"
+    private val channelId = context.packageName
+    private val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     init {
-        channelId = context.packageName
-        createNotificationChannel()
-        gNM = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel()
+        }
     }
 
-    fun showNotification(
-        title: String,
-        text: String,
-        priority: Int,
-    ) {
+    fun showNotification(title: String, text: String, priority: Int) {
         val notificationBuilder =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Notification.Builder(context, channelId)
@@ -46,24 +42,18 @@ class Notifier(var context: Context) {
             } else {
                 13737
             }
-        gNM!!.notify(notificationId, notification)
+        nm.notify(notificationId, notification)
     }
 
+    @RequiresApi(26)
     private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && channelId.isNotEmpty()) {
-            val name = context.packageName
-            val descriptionText = "UP-Example"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel =
-                NotificationChannel(channelId, name, importance).apply {
-                    description = descriptionText
-                }
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
+        val name = context.packageName
+        val descriptionText = "Test notifications"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel =
+            NotificationChannel(channelId, name, importance).apply {
+                description = descriptionText
+            }
+        nm.createNotificationChannel(channel)
     }
 }
