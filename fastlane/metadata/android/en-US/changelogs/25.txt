@@ -1,0 +1,1 @@
+Upgrade android-connector with a fix
