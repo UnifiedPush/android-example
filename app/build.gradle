@@ -68,7 +68,7 @@ if (project.hasProperty('sign')) {
 }
 
 dependencies {
-    ext.connector = 'org.unifiedpush.android:connector:3.0.0'
+    ext.connector = 'org.unifiedpush.android:connector:3.0.1'
     ext.connector_ui = "org.unifiedpush.android:connector-ui:1.1.0"
     ext.embedded_distrib = 'org.unifiedpush.android:embedded-fcm-distributor:2.5.0'
 
