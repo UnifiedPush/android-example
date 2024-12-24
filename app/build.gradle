@@ -23,8 +23,8 @@ android {
         applicationId "org.unifiedpush.example"
         targetSdk 35
         minSdk 21
-        versionCode 26
-        versionName "2.0.2"
+        versionCode 27
+        versionName "2.0.3"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
