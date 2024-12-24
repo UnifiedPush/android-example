@@ -294,6 +294,7 @@ class ApplicationServer(private val context: Context) {
             JSONObject()
                 .put("aud", "${endpoint.protocol}://${endpoint.authority}")
                 .put("exp", time12h)
+                .put("sub", "https://codeberg.org/UnifiedPush/android-example")
                 .toString()
                 .replace("\\/", "/")
                 .toByteArray(Charsets.UTF_8)
