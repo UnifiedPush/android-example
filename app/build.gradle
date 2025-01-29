@@ -1,6 +1,3 @@
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
@@ -96,48 +93,6 @@ dependencies {
     implementation connector_ui  //delToDevUILib//
 //toDevUILib//    implementation project(':connector_ui')
 
-    fcmImplementation(embedded_distrib) {  //delToDevFcm//
-        exclude group: 'com.google.firebase', module: 'firebase-core'  //delToDevFcm//
-        exclude group: 'com.google.firebase', module: 'firebase-analytics'  //delToDevFcm//
-        exclude group: 'com.google.firebase', module: 'firebase-measurement-connector'  //delToDevFcm//
-    }  //delToDevFcm//
+    fcmImplementation(embedded_distrib) //delToDevFcm//
 //toDevFcm//    fcmImplementation  project(':distributor')
-}
-
-def getCurrentFlavor() {
-    Gradle gradle = getGradle()
-    String  tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
-    String flavor
-
-    Pattern pattern
-
-    if( tskReqStr.contains( "assemble" ) )
-        pattern = Pattern.compile("assemble(\\w+)")
-    else
-        pattern = Pattern.compile("generate(\\w+)")
-
-    Matcher matcher = pattern.matcher( tskReqStr )
-
-    if( matcher.find() ) {
-        flavor = matcher.group(1).toLowerCase()
-    }
-    else
-    {
-        println "NO MATCH FOUND"
-        return ""
-    }
-
-    pattern = Pattern.compile("^fcm.*");
-    matcher = pattern.matcher(flavor);
-
-    if( matcher.matches() ) {
-        return "fcm"
-    } else {
-        return "main"
-    }
-}
-
-println("Flavor: ${getCurrentFlavor()}")
-if ( getCurrentFlavor() == "fcm" ){
-    apply plugin: 'com.google.gms.google-services'
 }
