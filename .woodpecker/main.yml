@@ -23,8 +23,13 @@ steps:
           - mv app/build/outputs/apk/fcm/release/app-fcm-release.apk UP-Example-fcm.apk
           - mv app/build/outputs/apk/mainFlavor/release/app-mainFlavor-release.apk UP-Example-main.apk
         environment:
-          - RELEASE_KEY_ALIAS=unifiedpush
-        secrets: [ release_key, release_store_password, release_key_password ]
+          RELEASE_KEY_ALIAS: unifiedpush
+          RELEASE_KEY:
+            from_secret: release_key
+          RELEASE_STORE_PASSWORD:
+            from_secret: release_store_password
+          RELEASE_KEY_PASSWORD:
+            from_secret: release_key_password
 
     upload:
         image: codeberg.org/s1m/woodpecker-upload:latest
