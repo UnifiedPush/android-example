@@ -35,7 +35,6 @@ import org.unifiedpush.example.activities.AppBarViewModel
 import org.unifiedpush.example.activities.CheckViewModel
 import org.unifiedpush.example.activities.Events
 import org.unifiedpush.example.utils.genTestPageUrl
-import kotlin.math.min
 
 @Composable
 fun CheckUi(appBarViewModel: AppBarViewModel, viewModel: CheckViewModel) {
@@ -276,10 +275,10 @@ fun TwoColumns(list: List<@Composable () -> Unit>) {
 fun CheckUiPreview() {
     val endpoint = "https://my.endpoint.tld"
     val p256dh = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
     val auth = "Auth_random"
     val vapid = "vapid t=eyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
     val testUrl = genTestPageUrl(
         endpoint,
         p256dh,
