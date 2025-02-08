@@ -22,12 +22,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.unifiedpush.example.Urgency
 import org.unifiedpush.example.activities.AppBarViewModel
 import org.unifiedpush.example.activities.CheckViewModel
 import org.unifiedpush.example.activities.Events
+import kotlin.math.min
 
 @Composable
 fun CheckUi(appBarViewModel: AppBarViewModel, viewModel: CheckViewModel) {
@@ -41,6 +47,7 @@ fun CheckUi(appBarViewModel: AppBarViewModel, viewModel: CheckViewModel) {
 @Composable
 fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
     var showUrgencyDialog by remember { mutableStateOf(false) }
+    val state = viewModel.uiState
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -59,7 +66,7 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                 style = MaterialTheme.typography.labelMedium,
                 text = "Endpoint"
             )
-            SelectionContainer { Text(viewModel.uiState.endpoint) }
+            SelectionContainer { Text(state.endpoint) }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -67,7 +74,7 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                 style = MaterialTheme.typography.labelMedium,
                 text = "Auth"
             )
-            SelectionContainer { Text(viewModel.uiState.auth) }
+            SelectionContainer { Text(state.auth) }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -75,22 +82,45 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                 style = MaterialTheme.typography.labelMedium,
                 text = "P256dh"
             )
-            SelectionContainer { Text(viewModel.uiState.p256dh) }
+            SelectionContainer { Text(state.p256dh) }
         }
 
-        if (viewModel.uiState.showVapid) {
+        if (state.showVapid) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     style = MaterialTheme.typography.labelMedium,
                     text = "VAPID"
                 )
-                SelectionContainer { Text(viewModel.uiState.vapid) }
+                SelectionContainer { Text(state.vapid) }
             }
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                style = MaterialTheme.typography.labelMedium,
+                text = "Test page"
+            )
+            Text(
+                text = buildAnnotatedString {
+                    withLink(
+                        LinkAnnotation.Url(
+                            url = state.testPageUrl,
+                            styles = TextLinkStyles(
+                                style = SpanStyle(
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                        )
+                    ) {
+                        append(state.testPageUrl.substring(0, min(38, state.testPageUrl.length)))
+                    }
+                }
+            )
         }
 
         HorizontalDivider(thickness = 1.dp)
 
-        viewModel.uiState.error?.let {
+        state.error?.let {
             Text(it)
         }
 
@@ -114,7 +144,7 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                 }
             }
         )
-        if (viewModel.uiState.devMode) {
+        if (state.devMode) {
             buttonsList.addAll(
                 listOf(
                     {
@@ -129,7 +159,7 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                     },
                     {
                         Button(
-                            enabled = viewModel.uiState.hasForegroundService,
+                            enabled = state.hasForegroundService,
                             onClick = {
                                 Events.emit(Events.Type.StopForegroundService)
                             }
@@ -157,7 +187,7 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                     },
                     {
                         Button(
-                            enabled = !viewModel.uiState.sendCleartext,
+                            enabled = !state.sendCleartext,
                             onClick = {
                                 showUrgencyDialog = true
                             }
@@ -176,7 +206,7 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                     },
                     {
                         Button(
-                            enabled = !viewModel.uiState.sendCleartext,
+                            enabled = !state.sendCleartext,
                             onClick = {
                                 Events.emit(Events.Type.TestTopic)
                             }
@@ -186,7 +216,7 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                     },
                     {
                         Button(
-                            enabled = !viewModel.uiState.sendCleartext,
+                            enabled = !state.sendCleartext,
                             onClick = {
                                 Events.emit(Events.Type.TestTTL)
                             }
@@ -211,7 +241,7 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
 
         if (showUrgencyDialog) {
             SetUrgencyDialog(
-                urgency = viewModel.uiState.urgency,
+                urgency = state.urgency,
                 onDismissRequest = { showUrgencyDialog = false },
                 onConfirmation = {
                     viewModel.setUrgency(it)
@@ -255,6 +285,7 @@ fun CheckUiPreview() {
                 showVapid = true,
                 vapid = "vapid t=eyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
                     "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                testPageUrl = "https://unifiedpush.org/test_wp.html",
                 urgency = Urgency.NORMAL
             )
         )

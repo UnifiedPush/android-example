@@ -60,3 +60,14 @@ fun ByteArray.b64encode(): String {
         Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
     ).toString(Charsets.UTF_8)
 }
+
+/**
+ * Generate test page URL for parameters
+ */
+fun genTestPageUrl(endpoint: String, p256dh: String, auth: String, vapid: String, showVapid: Boolean): String {
+    var url = "https://unifiedpush.org/test_wp.html#endpoint=$endpoint&p256dh=$p256dh&auth=$auth"
+    if (showVapid) {
+        url += "&vapid=$vapid"
+    }
+    return url
+}
