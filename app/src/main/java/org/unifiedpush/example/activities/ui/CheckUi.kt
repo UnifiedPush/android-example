@@ -26,6 +26,7 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +34,7 @@ import org.unifiedpush.example.Urgency
 import org.unifiedpush.example.activities.AppBarViewModel
 import org.unifiedpush.example.activities.CheckViewModel
 import org.unifiedpush.example.activities.Events
+import org.unifiedpush.example.utils.genTestPageUrl
 import kotlin.math.min
 
 @Composable
@@ -112,9 +114,11 @@ fun CheckUiContent(innerPadding: PaddingValues, viewModel: CheckViewModel) {
                             )
                         )
                     ) {
-                        append(state.testPageUrl.substring(0, min(38, state.testPageUrl.length)))
+                        append(state.testPageUrl)
                     }
-                }
+                },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
@@ -270,6 +274,19 @@ fun TwoColumns(list: List<@Composable () -> Unit>) {
 @Preview
 @Composable
 fun CheckUiPreview() {
+    val endpoint = "https://my.endpoint.tld"
+    val p256dh = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    val auth = "Auth_random"
+    val vapid = "vapid t=eyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    val testUrl = genTestPageUrl(
+        endpoint,
+        p256dh,
+        auth,
+        vapid,
+        true
+    )
     CheckUiContent(
         PaddingValues(0.dp),
         CheckViewModel(
@@ -278,14 +295,12 @@ fun CheckUiPreview() {
                 devMode = true,
                 hasForegroundService = false,
                 sendCleartext = true,
-                endpoint = "https://my.endpoint.tld",
-                auth = "Auth_random",
-                p256dh = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                endpoint = endpoint,
+                auth = auth,
+                p256dh = p256dh,
                 showVapid = true,
-                vapid = "vapid t=eyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-                    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-                testPageUrl = "https://unifiedpush.org/test_wp.html",
+                vapid = vapid,
+                testPageUrl = testUrl,
                 urgency = Urgency.NORMAL
             )
         )
