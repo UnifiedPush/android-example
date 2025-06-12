@@ -1,0 +1,4 @@
+- Use connector 3.0.10
+- Add message for distributor
+- Add link to the test page
+- Use new EFCMD
