@@ -28,7 +28,7 @@ class RegistrationDialogs(
         override fun register(instance: String) {
             val store = Store(context)
             val vapid = if (store.devMode && store.devUseVapid) store.vapidPubKey else null
-            UnifiedPush.register(context, instance, vapid = vapid)
+            UnifiedPush.register(context, instance, messageForDistributor = "Default Instance", vapid = vapid)
         }
 
         override fun saveDistributor(distributor: String) {
