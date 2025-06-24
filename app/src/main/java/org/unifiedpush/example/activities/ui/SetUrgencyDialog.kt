@@ -25,7 +25,11 @@ fun SetUrgencyDialog(urgency: Urgency = Urgency.NORMAL, onDismissRequest: () -> 
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Urgency.entries.forEach { entry ->
+                // When minSdk >= 24
+                // Urgency.entries.forEach { entry ->
+                val iter = Urgency.entries.iterator()
+                while (iter.hasNext()) {
+                    val entry = iter.next()
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         TextButton(
                             onClick = { onConfirmation(entry) }

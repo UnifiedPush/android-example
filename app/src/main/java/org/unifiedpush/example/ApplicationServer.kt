@@ -368,6 +368,7 @@ class ApplicationServer(private val context: Context) {
         }.let { EllipticCurves.ecdsaDer2Ieee(it, 64) }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun signWithTempKey(data: ByteArray): ByteArray? {
         val keyPair: KeyPair =
             EllipticCurves.generateKeyPair(EllipticCurves.CurveType.NIST_P256)
